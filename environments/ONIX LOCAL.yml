@@ -1,0 +1,8 @@
+name: ONIX LOCAL
+variables:
+  - name: URL
+    value: http://localhost:3000
+    description: Base de la API local, sin barra final (los endpoints usan {{URL}}/api/v1/...)
+  - name: TOKEN
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMmIxNWRiNi1hMzAxLTRlYmMtOGFiNy04ZDhhN2NlM2RlNDciLCJzaWQiOjMsInRva2VuX3VzZSI6ImFjY2VzcyIsImlhdCI6MTc5NDU5MDE5NiwiZXhwIjoxNzk0NTkwNzk2LCJhdWQiOiJvbml4LWFwcHMiLCJpc3MiOiJvbml4LWFwaSJ9.-iT-yVIjSJPqdC9FCge3wOGasdeEF9jvkUUMOBl7UI4
+    description: Bearer de la última sesión; lo renueva iniciar-sesion (puede estar vencido)

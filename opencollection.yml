@@ -1,0 +1,41 @@
+opencollection: 1.0.0
+
+info:
+  name: OnixApi
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+docs: |-
+  # Onix API — colección local
+
+  Colección para probar la API Onix contra `http://localhost:3000/api/v1`
+  (entorno `ONIX LOCAL`).
+
+  ## Orden de ejecución
+
+  1. **Autenticacion › iniciar-sesion** — obtiene `TOKEN` (guardado en la variable
+     de entorno). El encabezado `X-Onix-Client` es obligatorio: `web` o `mobile`.
+  2. **Autenticacion › cambiar-contrasena-inicial** — solo si la respuesta de
+     login indica `requiereCambioContrasena: true`. Revoca la sesión: después hay
+     que volver a iniciar sesión.
+  3. **Autenticacion › me** — identidad, perfil y permisos efectivos de la sesión.
+  4. **Usuarios › crear-usuario** — requiere una sesión completa (sin cambio
+     inicial pendiente) y los permisos `usuario.crear` y `usuario.asignarPerfil`.
+
+  ## Reglas vigentes
+
+  - Una sola sesión activa por usuario: un login correcto reemplaza la anterior,
+    también entre web y móvil. Usa cuentas distintas para pruebas simultáneas.
+  - El JWT no contiene permisos; `/me` y los permisos se consultan en PostgreSQL
+    en cada petición.
+  - Contraseñas nuevas (cambio inicial y creación): 12 a 256 caracteres.
+  - La cuenta creada por el seed queda como `sinAsignar`, sin permisos. Para
+    aprovisionar administradora: `pnpm db:bootstrap-admin <usuario>`.
+
+  ## Documentación ejecutable
+
+  - Swagger: http://localhost:3000/api/v1/documentacion
+  - OpenAPI JSON: http://localhost:3000/api/v1/openapi.json
