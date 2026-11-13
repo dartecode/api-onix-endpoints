@@ -1,0 +1,49 @@
+info:
+  name: refresh
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/renovar"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: mobile
+      description: Con web la credencial viaja en la cookie onix_refresh y el cuerpo se ignora
+  body:
+    type: json
+    data: |-
+      {
+        "refreshToken": "{{REFRESH_TOKEN}}"
+      }
+  auth: none
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        test("sesión renovada", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+        const data = res.getBody().data;
+        bru.setEnvVar("TOKEN", data.accessToken);
+        if (data.refreshToken) bru.setEnvVar("REFRESH_TOKEN", data.refreshToken);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Renovar sesión
+
+  `POST /api/v1/autenticacion/renovar` → `data`: `{ tokenType, accessToken, expiresIn, refreshToken? }`.
+
+  - mobile: `refreshToken` en el cuerpo; recibe uno nuevo.
+  - web: cookie HttpOnly `onix_refresh` (en el navegador, `fetch` con `credentials: 'include'`).
+
+  Cada credencial sirve **una vez**; reutilizarla responde `401`.

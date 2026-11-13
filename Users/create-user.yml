@@ -1,0 +1,59 @@
+info:
+  name: create-user
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/usuarios"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: web
+      description: Se registra en la auditoría
+  body:
+    type: json
+    data: |-
+      {
+        "username": "operador.prueba2",
+        "temporaryPassword": "Temporal-Pruebas-2026",
+        "profile": "operador"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("cuenta creada", function () {
+            expect(res.getStatus()).to.equal(201);
+            const data = res.getBody().data;
+            expect(data).to.have.property("user");
+            expect(data.requiresPasswordChange).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Crear usuario
+
+  `POST /api/v1/usuarios` · cuerpo `{ username, temporaryPassword, profile }`.
+
+  `profile` es un código de la base: `administrador`, `supervisor`, `operador`, `tecnico`,
+  `gerencia`, `clienteAdministrador`, `clienteResponsableInstalacion`, `clienteConsulta`,
+  `auditorInterno`, `dpd`.
+
+  `data`: `{ user { id, name, email }, profile, requiresPasswordChange: true }`.
+
+  | Código | Significado |
+  | --- | --- |
+  | 400 | Datos inválidos o campos extra. |
+  | 401 | Token o sesión no vigentes. |
+  | 403 | Sesión restringida, sin permisos o perfil no asignable. |
+  | 409 | El usuario ya existe. |

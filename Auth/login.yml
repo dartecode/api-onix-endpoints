@@ -1,0 +1,61 @@
+info:
+  name: login
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/iniciar-sesion"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: mobile
+      description: "web: refresh en cookie HttpOnly · mobile: refreshToken en el JSON"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "{{USERNAME}}",
+        "password": "{{PASSWORD}}"
+      }
+  auth: none
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        test("login correcto", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+        const data = res.getBody().data;
+        bru.setEnvVar("TOKEN", data.accessToken);
+        if (data.refreshToken) bru.setEnvVar("REFRESH_TOKEN", data.refreshToken);
+        if (data.requiresPasswordChange) {
+            console.log("Primer acceso: ejecuta change-initial-password y vuelve a hacer login.");
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Login
+
+  `POST /api/v1/autenticacion/iniciar-sesion` · cuerpo `{ username, password }` · encabezado obligatorio
+  `X-Onix-Client: web|mobile`.
+
+  `data`: `{ tokenType, accessToken, expiresIn, requiresPasswordChange, user { id, username, roleId }, refreshToken? }`.
+
+  Una sola sesión activa por usuario: este login revoca la anterior (también en otro dispositivo).
+  Usuario y contraseña salen de las variables `USERNAME` y `PASSWORD` del entorno: completa
+  `PASSWORD` solo en tu copia local.
+
+  | Código | Significado |
+  | --- | --- |
+  | 400 | Datos o `X-Onix-Client` inválidos (`VALIDATION_ERROR`, `BAD_REQUEST`). |
+  | 401 | Usuario o contraseña incorrectos. |
+  | 403 | Cuenta bloqueada o deshabilitada. |

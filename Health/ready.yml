@@ -1,0 +1,25 @@
+info:
+  name: ready
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{URL}}/api/v1/health/ready"
+  auth: none
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("ready", function () {
+            expect(res.getStatus()).to.equal(200);
+            expect(res.getBody().data.database).to.equal("ok");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
