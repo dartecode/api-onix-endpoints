@@ -1,0 +1,26 @@
+info:
+  name: Auth
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+
+docs: |-
+  # Auth
+
+  Login, sesión, renovación, cierre y cambio de contraseña del primer acceso.
+
+  ## Flujo
+
+  1. `login` → `accessToken` (Bearer, 10 min). Con `X-Onix-Client: mobile` también
+     `refreshToken` en el JSON; con `web` la renovación llega en la cookie HttpOnly `onix_refresh`.
+  2. Si `requiresPasswordChange` es `true`, el token es **restringido**: solo sirve para
+     `change-initial-password`. Después hay que volver a hacer `login`.
+  3. `me` devuelve perfil y permisos efectivos (códigos de la base, en español).
+  4. `refresh` rota la credencial de renovación; `logout` revoca la sesión.
+
+  ## Respuestas
+
+  Todo llega en `{ success, statusCode, data, meta?, path, timestamp }`. Errores:
+  `{ success: false, statusCode, code, message, details? }`.

@@ -1,0 +1,56 @@
+info:
+  name: list-clients
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{URL}}/api/v1/clientes?page=1&limit=20"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "20"
+      type: query
+    - name: search
+      value: ""
+      type: query
+      disabled: true
+    - name: status
+      value: activo
+      type: query
+      disabled: true
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("lista paginada", function () {
+            expect(res.getStatus()).to.equal(200);
+            expect(res.getBody().data).to.be.an("array");
+            expect(res.getBody().meta).to.have.property("total");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Listar clientes
+
+  `GET /api/v1/clientes?page=1&limit=20&search=&status=`
+
+  | Parámetro | Reglas |
+  | --- | --- |
+  | `page` | Entero ≥ 1 (por defecto 1). |
+  | `limit` | 1 a 100 (por defecto 20). |
+  | `search` | Opcional; nombre o identificación. |
+  | `status` | Opcional; código de la base: `activo`, `suspendido`, `inactivo`. |
+
+  `data`: lista de `{ id, name, taxId, status, installationCount, createdAt }` y
+  `meta`: `{ page, limit, total, totalPages }`.

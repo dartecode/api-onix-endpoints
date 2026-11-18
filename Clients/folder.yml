@@ -1,0 +1,15 @@
+info:
+  name: Clients
+  type: folder
+  seq: 4
+
+request:
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+docs: |-
+  # Clients (ejemplo con procedimientos almacenados)
+
+  Datos del **mock** de `onix.sp_clientes_listar` y `onix.sp_clientes_obtener` mientras esos SP
+  no existan en la base (ver `docs/PROCEDIMIENTOS.md` del API). Requiere el permiso `cliente.ver`.

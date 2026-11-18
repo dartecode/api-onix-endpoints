@@ -1,0 +1,31 @@
+info:
+  name: get-client
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{URL}}/api/v1/clientes/0b7c2a51-6a1e-4f0a-9a3c-1d2e3f4a5b01"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("ficha del cliente", function () {
+            expect(res.getStatus()).to.equal(200);
+            expect(res.getBody().data).to.have.property("name");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Obtener cliente
+
+  `GET /api/v1/clientes/:id` (UUID v4). `404 CLIENT_NOT_FOUND` si no existe o está fuera del
+  alcance de la sesión. El id de ejemplo es del mock.

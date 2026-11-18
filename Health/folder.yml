@@ -1,0 +1,12 @@
+info:
+  name: Health
+  type: folder
+  seq: 1
+
+request:
+  auth: none
+
+docs: |-
+  # Health
+
+  Sondas públicas, sin token. `live` solo comprueba el proceso; `ready` también PostgreSQL.

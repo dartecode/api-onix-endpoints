@@ -1,0 +1,15 @@
+info:
+  name: Users
+  type: folder
+  seq: 3
+
+request:
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+docs: |-
+  # Users
+
+  Requiere sesión completa y los permisos `usuario.crear` y `usuario.asignarPerfil`.
+  Para dar perfil de administrador a una cuenta existente: `pnpm db:bootstrap-admin <usuario>`.
