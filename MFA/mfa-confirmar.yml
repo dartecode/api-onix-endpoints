@@ -9,16 +9,28 @@ http:
   headers:
     - name: Content-Type
       value: application/json
+    - name: X-Onix-Client
+      value: web
+      description: Obligatorio; cambiar a mobile para recibir tokenRenovacion en JSON
   body:
     type: json
     data: |-
       {
-        "idDesafio": "7a4d2584-916d-4cce-9c41-720005dae8f8",
-        "codigo": "547030"
+        "idDesafio": "{{ID_DESAFIO}}",
+        "codigo": "748522"
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhN2NhZWM0Yy1hZjI4LTRjNWItOWRiYS0xYTkxZTZlNzhjY2YiLCJzaWQiOiJiZWQxYjg4ZC05MzkyLTQ2NGYtYjkxNC04YTY5ZTkzNjg0ZGYiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMjAwMTksImV4cCI6MTc5NTAyMDYxOSwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.0nJHBKCN2_cPyGk_CDglz9nSz0Y725NT0LlG0N5ujmY
+    token: "{{TOKEN}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 200 && body.success ? body.data : null;
+        if (data?.tokenAcceso) bru.setEnvVar("TOKEN", data.tokenAcceso);
+        if (data?.tokenRenovacion) bru.setEnvVar("TOKEN_RENOVACION", data.tokenRenovacion);
 
 settings:
   encodeUrl: true
@@ -29,5 +41,7 @@ settings:
 
 docs: |-
   Confirma enrolamiento correo/TOTP (no desafío de login). Sesión completa
-  o configurar_mfa. En configurar_mfa cierra sesión: volver al login.
-  401: código/desafío inválido; 200: data.mensaje.
+  o configurar_mfa. Desde Mi cuenta responde data.mensaje y conserva la sesión.
+  Desde configurar_mfa responde paso=sesion, reemplaza TOKEN por el de la sesión
+  completa y continúa sin volver al login. En web actualiza la cookie; en móvil,
+  TOKEN_RENOVACION. 401: código o desafío inválido.

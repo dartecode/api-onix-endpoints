@@ -12,7 +12,7 @@ http:
       value: application/json
   body:
     type: json
-    data: '{}'
+    data: "{}"
   auth:
     type: none
 runtime:
@@ -20,8 +20,10 @@ runtime:
     - type: after-response
       code: |-
         const body = res.getBody();
-        bru.setEnvVar("TOKEN", res.getStatus() === 200 && body.success ? body.data.tokenAcceso : "");
+        const data = res.getStatus() === 200 && body.success ? body.data : null;
+        bru.setEnvVar("TOKEN", data?.tokenAcceso ?? "");
+        if (data?.tokenRenovacion) bru.setEnvVar("TOKEN_RENOVACION", data.tokenRenovacion);
 docs: |-
   Web: cookie jar onix_refresh y cuerpo {}. Móvil: cambiar cabecera a mobile y
   cuerpo a { "tokenRenovacion": "{{TOKEN_RENOVACION}}" }. 200: tokens en data;
-  guardar la nueva renovación móvil manualmente. 401: vencida, revocada o ya usada.
+  el script guarda la nueva renovación móvil. 401: vencida, revocada o ya usada.

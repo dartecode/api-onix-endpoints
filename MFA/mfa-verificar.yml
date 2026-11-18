@@ -16,7 +16,7 @@ http:
     data: |-
       {
         "idDesafio": "{{ID_DESAFIO}}",
-        "codigo": "498929"
+        "codigo": "241869"
       }
 
 runtime:
@@ -26,6 +26,7 @@ runtime:
         const body = res.getBody();
         const data = res.getStatus() === 200 && body.success ? body.data : null;
         bru.setEnvVar("TOKEN", data?.tokenAcceso ?? "");
+        if (data?.tokenRenovacion) bru.setEnvVar("TOKEN_RENOVACION", data.tokenRenovacion);
 
 settings:
   encodeUrl: true

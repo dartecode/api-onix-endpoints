@@ -12,5 +12,6 @@ docs:
     Inicial requiere cambio_contrasena; cambio propio y me requieren sesión completa.
     X-Onix-Client obligatorio en login, renovar y mfa-verificar (web o mobile).
     Renovación web por cookie, móvil por data.tokenRenovacion.
-    Tras cambio de contraseña o cierre volver a iniciar sesión.
+    El cambio inicial continúa a configurar_mfa, mfa o sesion sin repetir credenciales.
+    El cambio voluntario de contraseña y el cierre sí terminan la sesión.
   type: text/markdown

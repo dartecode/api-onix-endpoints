@@ -17,12 +17,24 @@ http:
     type: json
     data: |-
       {
-        "nuevaContrasena": "DarioValdez123",
-        "confirmacionContrasena": "DarioValdez123"
+        "nuevaContrasena": "Supervisor12",
+        "confirmacionContrasena": "Supervisor12"
       }
   auth:
     type: bearer
     token: "{{TOKEN}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 200 && body.success ? body.data : null;
+        if (data) {
+          bru.setEnvVar("TOKEN", data.tokenAcceso ?? "");
+          bru.setEnvVar("ID_DESAFIO", data.idDesafio ?? "");
+          if (data.tokenRenovacion) bru.setEnvVar("TOKEN_RENOVACION", data.tokenRenovacion);
+        }
 
 settings:
   encodeUrl: true
@@ -52,12 +64,14 @@ docs: |-
 
   ## Respuesta `200`
 
-  ```json
-  { "success": true, "statusCode": 200, "data": { "mensaje": "Contraseña actualizada. Inicia sesión con tu nueva contraseña." } }
-  ```
+  Devuelve el siguiente paso del mismo flujo, sin pedir de nuevo usuario y contraseña:
 
-  El cambio actualiza el hash **y revoca la sesión** en una sola transacción.
-  No emite tokens: después hay que volver a `iniciar-sesion` con la clave nueva.
+  - `configurar_mfa`: TOKEN contiene una sesión restringida nueva.
+  - `mfa`: ID_DESAFIO contiene el desafío del MFA ya configurado.
+  - `sesion`: TOKEN contiene la sesión completa.
+
+  En móvil también actualiza TOKEN_RENOVACION. En web Bruno recibe la renovación en
+  la cookie HttpOnly. La sesión anterior queda revocada.
 
   ## Estados
 

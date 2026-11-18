@@ -1,0 +1,59 @@
+info:
+  name: cambiar-contrasena
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/cambiar-contrasena"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "contrasenaActual": "DarioValdez123",
+        "nuevaContrasena": "DarioValdez456",
+        "confirmacionContrasena": "DarioValdez456"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 200) {
+          bru.setEnvVar("TOKEN", "");
+          bru.setEnvVar("TOKEN_RENOVACION", "");
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Cambiar mi contraseña
+
+  `POST /api/v1/autenticacion/cambiar-contrasena`
+
+  Requiere una sesión completa y comprueba `contrasenaActual`. La contraseña nueva
+  debe tener entre 8 y 256 caracteres, minúscula, mayúscula y número o símbolo;
+  debe ser distinta de la actual y coincidir exactamente con la confirmación.
+
+  Un cambio correcto revoca todas las sesiones, invalida desafíos MFA pendientes y
+  limpia la cookie de renovación. Conserva la configuración MFA. El script borra
+  `TOKEN` y `TOKEN_RENOVACION`; después hay que iniciar sesión con la nueva clave.
+
+  | Estado | Significado |
+  | --- | --- |
+  | `200` | `data.mensaje` confirma el cambio. |
+  | `400` | Contraseña nueva o confirmación inválidas. |
+  | `401` | Contraseña actual incorrecta o sesión no vigente. |
+  | `403` | La sesión es restringida. |
+  | `409` | La contraseña cambió concurrentemente. |

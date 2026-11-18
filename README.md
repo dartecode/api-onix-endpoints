@@ -17,12 +17,12 @@ Swagger: http://localhost:3000/api/v1/docs; JSON: /api/v1/openapi.json.
 
 ## Variables locales
 
-| Variable | Uso |
-| --- | --- |
-| URL | Origen del API, por ejemplo http://localhost:3000 |
-| TOKEN | JWT del usuario; capturado al iniciar sesión o verificar MFA |
-| ID_DESAFIO | UUID de desafío; capturado en login, o copiar de data.idDesafio al configurar MFA |
-| TOKEN_RENOVACION | Último token de renovación móvil; en web usar cookie jar |
+| Variable         | Uso                                                                               |
+| ---------------- | --------------------------------------------------------------------------------- |
+| URL              | Origen del API, por ejemplo http://localhost:3000                                 |
+| TOKEN            | JWT del usuario; capturado al iniciar sesión o verificar MFA                      |
+| ID_DESAFIO       | UUID de desafío; capturado en login, o copiar de data.idDesafio al configurar MFA |
+| TOKEN_RENOVACION | Último token de renovación móvil; en web usar cookie jar                          |
 
 El script de login conserva las credenciales existentes del request, captura
 data.tokenAcceso y limpia TOKEN cuando no hay tokens. Leer el siguiente paso en data.paso.
@@ -35,16 +35,18 @@ No hay tests ni aserciones automáticas, solo scripts para capturar credenciales
 
 ## Flujos de contraseña
 
-| Petición | POST después de /api/v1 | Acceso |
-| --- | --- | --- |
-| cambiar-contrasena-inicial | /autenticacion/cambiar-contrasena-inicial | Sesión cambio_contrasena |
-| cambiar-contrasena | /autenticacion/cambiar-contrasena | Sesión completa + contraseña actual |
-| restablecer-contrasena | /usuarios/:id/restablecer-contrasena | usuario.editar y alcance |
+| Petición                   | POST después de /api/v1                   | Acceso                              |
+| -------------------------- | ----------------------------------------- | ----------------------------------- |
+| cambiar-contrasena-inicial | /autenticacion/cambiar-contrasena-inicial | Sesión cambio_contrasena            |
+| cambiar-contrasena         | /autenticacion/cambiar-contrasena         | Sesión completa + contraseña actual |
+| restablecer-contrasena     | /usuarios/:id/restablecer-contrasena      | usuario.editar y alcance            |
 
 Inicial y propio reciben nuevaContrasena y confirmacionContrasena; el propio agrega
 contrasenaActual. No se recortan espacios; estos no cuentan como símbolo. Se exige
 minúscula, mayúscula y número o símbolo. La nueva debe ser distinta de la anterior.
-Al finalizar se revoca la sesión y se limpia la cookie: iniciar sesión nuevamente.
+El cambio inicial continúa al siguiente paso y emite las credenciales necesarias sin
+pedir usuario y contraseña otra vez. El cambio propio sí revoca la sesión y limpia la
+cookie: iniciar sesión nuevamente.
 El restablecimiento no recibe contraseña: genera una temporal, la envía al correo,
 revoca sesiones y exige cambio inicial. Conserva bloqueo e intentos; desbloquear es
 una acción separada mediante PATCH /usuarios/:id/estado con accion=desbloquear.
@@ -54,9 +56,11 @@ Cambiar/restablecer conserva la configuración MFA e invalida desafíos pendient
 
 Enviar usuario y contrasena con X-Onix-Client web o mobile y leer data.paso:
 
-- cambio_contrasena: ejecutar cambio inicial y repetir login.
+- cambio_contrasena: ejecutar cambio inicial; su respuesta continúa a configurar_mfa,
+  mfa o sesion y actualiza TOKEN/ID_DESAFIO.
 - configurar_mfa: obtener configuración por correo/TOTP, copiar data.idDesafio al
-  cuerpo de mfa-confirmar junto con el código recibido; después repetir login.
+  cuerpo de mfa-confirmar junto con el código recibido; la confirmación devuelve la
+  sesión completa y actualiza TOKEN.
 - mfa: el login captura ID_DESAFIO; ejecutar mfa-verificar y obtener tokens.
 - sesion: TOKEN completo, usar me y operaciones autorizadas.
 

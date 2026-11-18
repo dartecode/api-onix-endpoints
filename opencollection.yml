@@ -11,6 +11,7 @@ docs: |-
   Colección de Onix. Abrir README.md para variables, permisos y flujos manuales.
   URL es el origen sin /api/v1; respuestas de negocio dentro de data.
   Login devuelve data.paso: sesion, cambio_contrasena, configurar_mfa o mfa.
+  El primer acceso encadena sus pasos y actualiza TOKEN sin repetir credenciales.
   TOKEN es el Bearer; la renovación web usa el cookie jar de Bruno.
   Una sesión por cuenta. No hay tests automáticos.
   Swagger: http://localhost:3000/api/v1/docs.

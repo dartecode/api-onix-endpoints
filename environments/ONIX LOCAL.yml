@@ -1,14 +1,14 @@
 name: ONIX LOCAL
 variables:
   - name: ID_DESAFIO
-    value: cfa746fa-e889-4e6b-8695-f117b1c892a6
-    description: ""
+    value: 60534b42-08f2-4b0a-b4c0-87644fc9b67b
+    description: Último desafío capturado durante login o primer acceso
   - name: TOKEN_RENOVACION
     value: ""
-    description: ""
+    description: Credencial móvil; en web se utiliza el cookie jar
   - name: URL
     value: http://localhost:3000
     description: Base del API local, sin barra final (los endpoints usan {{URL}}/api/v1/...)
   - name: TOKEN
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhN2NhZWM0Yy1hZjI4LTRjNWItOWRiYS0xYTkxZTZlNzhjY2YiLCJzaWQiOiJmOTJmZDExMy0zNDczLTQ3NTYtYTgyMi0yZjI0ZWVhNTI3ZmMiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMjA1NDIsImV4cCI6MTc5NTAyMTE0MiwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.ECd0FJYeKqGBeUGB_XEj4qBM3aIqtDhviwWsU4kHesM
-    description: Bearer de la última sesión; lo renueva iniciar-sesion (puede estar vencido)
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MmE4N2E5Yi03MzA1LTQ4YmQtODZkYS00YmQ5ZjkxMzc5MDMiLCJzaWQiOiI2ZWEyM2IyMS03ODkwLTRiN2EtOTQ5Ny03N2UxNjJhYTQ1ZjgiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMzg3OTIsImV4cCI6MTc5NTAzOTM5MiwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.HExB1BIYAyqNm9UN2T3hJ4PDaAFo3kz1vSu56aJn7Bg
+    description: Bearer capturado por los pasos de autenticación

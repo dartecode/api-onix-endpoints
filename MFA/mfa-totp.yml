@@ -10,6 +10,14 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 201 && body.success ? body.data : null;
+        if (data?.idDesafio) bru.setEnvVar("ID_DESAFIO", data.idDesafio);
+
 settings:
   encodeUrl: true
   timeout: 0
@@ -19,5 +27,5 @@ settings:
 
 docs: |-
   Sesión completa o configurar_mfa. Sin cuerpo. Devuelve data.idDesafio,
-  qr y claveManual. Escanear QR en app y copiar idDesafio a ID_DESAFIO.
+  qr y claveManual. El script guarda idDesafio en ID_DESAFIO; escanear el QR.
   La configuración no cambia hasta confirmar. No compartir QR ni clave.

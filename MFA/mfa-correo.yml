@@ -10,6 +10,14 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 201 && body.success ? body.data : null;
+        if (data?.idDesafio) bru.setEnvVar("ID_DESAFIO", data.idDesafio);
+
 settings:
   encodeUrl: true
   timeout: 0
@@ -19,4 +27,4 @@ settings:
 
 docs: |-
   Sesión completa o configurar_mfa. Sin cuerpo. Envía código y devuelve
-  data.idDesafio: copiar al cuerpo de mfa-confirmar junto con el código recibido.
+  data.idDesafio: el script lo guarda en ID_DESAFIO para mfa-confirmar.

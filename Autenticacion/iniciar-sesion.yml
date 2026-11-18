@@ -17,8 +17,8 @@ http:
     type: json
     data: |-
       {
-        "usuario": "dvaldez",
-        "contrasena": "DarioValdez456"
+        "usuario": "supervisor.testmfa",
+        "contrasena": "hLRdTjb4KmpjCMxm"
       }
   auth: inherit
 
@@ -30,6 +30,7 @@ runtime:
         const data = res.getStatus() === 200 && body.success === true ? body.data : null;
         bru.setEnvVar("TOKEN", data?.tokenAcceso ?? "");
         bru.setEnvVar("ID_DESAFIO", data?.idDesafio ?? "");
+        if (data?.tokenRenovacion) bru.setEnvVar("TOKEN_RENOVACION", data.tokenRenovacion);
 
 settings:
   encodeUrl: true
