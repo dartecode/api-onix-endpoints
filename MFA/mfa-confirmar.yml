@@ -1,0 +1,33 @@
+info:
+  name: mfa-confirmar
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/mfa/confirmar"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "idDesafio": "7a4d2584-916d-4cce-9c41-720005dae8f8",
+        "codigo": "547030"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhN2NhZWM0Yy1hZjI4LTRjNWItOWRiYS0xYTkxZTZlNzhjY2YiLCJzaWQiOiJiZWQxYjg4ZC05MzkyLTQ2NGYtYjkxNC04YTY5ZTkzNjg0ZGYiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMjAwMTksImV4cCI6MTc5NTAyMDYxOSwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.0nJHBKCN2_cPyGk_CDglz9nSz0Y725NT0LlG0N5ujmY
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Confirma enrolamiento correo/TOTP (no desafío de login). Sesión completa
+  o configurar_mfa. En configurar_mfa cierra sesión: volver al login.
+  401: código/desafío inválido; 200: data.mensaje.

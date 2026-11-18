@@ -1,0 +1,21 @@
+info:
+  name: restablecer-contrasena
+  type: http
+  seq: 3
+http:
+  method: POST
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000/restablecer-contrasena"
+  headers:
+    - name: X-Onix-Client
+      value: web
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Sin cuerpo. Actor con sesión completa, usuario.editar y alcance sobre el objetivo.
+  Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL;
+  usar otra cuenta como objetivo.
+  200: data.mensaje. Genera temporal por correo y exige cambio inicial al entrar.
+  Revoca sesiones e invalida desafíos MFA pendientes. Conserva MFA, bloqueo e intentos.
+  401: sesión; 403: permiso; 404: objetivo inexistente/fuera de alcance.
+  503 MAIL_UNAVAILABLE: cambio ya guardado; repetir genera otra contraseña temporal.

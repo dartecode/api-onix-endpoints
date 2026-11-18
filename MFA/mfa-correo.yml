@@ -1,0 +1,22 @@
+info:
+  name: mfa-correo
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/mfa/correo"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Sesión completa o configurar_mfa. Sin cuerpo. Envía código y devuelve
+  data.idDesafio: copiar al cuerpo de mfa-confirmar junto con el código recibido.

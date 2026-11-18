@@ -1,0 +1,15 @@
+info:
+  name: mfa-reiniciar-usuario
+  type: http
+  seq: 9
+http:
+  method: DELETE
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000/mfa"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
+  usuario.gestionarMfa y alcance. Sin cuerpo. 200: data.mensaje.
+  Borra configuración y desafíos pendientes; el siguiente login solicita
+  configurar MFA si el perfil lo exige.

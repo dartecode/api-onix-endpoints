@@ -1,0 +1,97 @@
+info:
+  name: iniciar-sesion
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/iniciar-sesion"
+  headers:
+    - name: Content-Type
+      value: application/json
+      description: Formato del cuerpo JSON
+    - name: X-Onix-Client
+      value: web
+      description: Transporte de la credencial de renovación; acepta web o mobile
+  body:
+    type: json
+    data: |-
+      {
+        "usuario": "dvaldez",
+        "contrasena": "DarioValdez456"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 200 && body.success === true ? body.data : null;
+        bru.setEnvVar("TOKEN", data?.tokenAcceso ?? "");
+        bru.setEnvVar("ID_DESAFIO", data?.idDesafio ?? "");
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Iniciar sesión
+
+  `POST /api/v1/autenticacion/iniciar-sesion`
+
+  ## Cuerpo
+
+  | Campo | Tipo | Notas |
+  | --- | --- | --- |
+  | `usuario` | string | Nombre de cuenta. |
+  | `contrasena` | string | Debe coincidir con el hash guardado. |
+
+  ## Encabezados
+
+  - `X-Onix-Client` (**obligatorio**): `web` o `mobile`.
+  - `Content-Type: application/json`.
+
+  ## Respuesta `200`
+
+  ```json
+  {
+    "success": true,
+    "statusCode": 200,
+    "data": {
+    "paso": "sesion",
+    "tipoToken": "Bearer",
+    "tokenAcceso": "<JWT 10 min>",
+    "expiraEn": 600,
+    "usuario": { "id": "<UUID>", "usuario": "test", "idRol": 1 }
+    }
+  }
+  ```
+
+  - `expiraEn=600` es la validez del JWT, **no** un límite de sesión.
+  - Con `X-Onix-Client: mobile` se agrega `tokenRenovacion` en el JSON; con `web`
+    la renovación sale en cookie HttpOnly (no se ve en el cuerpo).
+  - `data.paso`: `cambio_contrasena` → cambio inicial; `configurar_mfa` → configurar
+    segundo factor; `mfa` → verificar ID_DESAFIO y código, sin tokens todavía;
+    `sesion` → acceso completo.
+  - TOKEN guarda solo el token de acceso. La cookie la administra Bruno.
+  - El script limpia TOKEN si el login falla o responde un desafío sin tokens.
+
+  ## Estados
+
+  | Código | Significado |
+  | --- | --- |
+  | `400` | Datos o `X-Onix-Client` inválidos. |
+  | `401` | Usuario o contraseña incorrectos. |
+  | `403` | Cuenta bloqueada o deshabilitada. |
+
+  ## Notas
+
+  - Una sola sesión activa por usuario: este login **revoca** la sesión anterior,
+    también si se usa un dispositivo distinto.
+  - La contraseña del ejemplo (`abcdefgh`) es la cuenta local actual; cámbiala
+    aquí si tu cuenta usa otra clave. El login acepta claves existentes; las nuevas
+    exigen 8–256 caracteres, minúscula, mayúscula y número o símbolo.

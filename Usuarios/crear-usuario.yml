@@ -1,0 +1,41 @@
+info:
+  name: crear-usuario
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/usuarios"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: web
+  body:
+    type: json
+    data: |-
+      {
+        "usuario": "dvaldez",
+        "nombres": "Dario Valdez",
+        "correo": "dario.valdez@hackdevnet.com",
+        "perfil": "operador"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Sesión completa con usuario.crear y usuario.asignarPerfil. El sistema genera
+  una contraseña temporal y la envía por correo; no enviar contrasenaTemporal.
+  Para un perfil de cliente creado por un actor interno añadir idCliente numérico.
+  201: usuario en data (id, usuario, nombres, correo, perfil, etc.).
+  400: validación; 403: permiso/perfil; 409: duplicado; 422 CLIENTE_REQUERIDO.
+  503 MAIL_UNAVAILABLE puede significar que ya se creó: restablecer contraseña,
+  no repetir el alta. Cambiar el correo del ejemplo por uno que reciba mensajes.

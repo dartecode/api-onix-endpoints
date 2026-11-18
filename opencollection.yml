@@ -1,5 +1,4 @@
 opencollection: 1.0.0
-
 info:
   name: OnixApi
 bundled: false
@@ -9,29 +8,10 @@ extensions:
       - node_modules
       - .git
 docs: |-
-  # Onix API — colección local
-
-  Colección para probar el API contra `http://localhost:3000/api/v1` (entorno `ONIX LOCAL`).
-  Antes de empezar, completa `PASSWORD` en el entorno (solo en tu copia).
-
-  ## Orden de ejecución
-
-  1. **Health › ready** — comprueba API y PostgreSQL.
-  2. **Auth › login** — guarda `TOKEN` (y `REFRESH_TOKEN` en móvil). `X-Onix-Client` es obligatorio.
-  3. **Auth › change-initial-password** — solo si `requiresPasswordChange` es `true`; luego login otra vez.
-  4. **Auth › me** — perfil y permisos efectivos.
-  5. **Clients** — ejemplo con procedimientos almacenados simulados (mock).
-  6. **Users › create-user** — requiere `usuario.crear` y `usuario.asignarPerfil`.
-  7. **Auth › refresh / logout**.
-
-  ## Formato de respuesta
-
-  Éxito: `{ success, statusCode, data, meta?, path, timestamp }`. Error:
-  `{ success: false, statusCode, code, message, details? }`. Los scripts leen `res.getBody().data`.
-  Rutas en español (menos /health); campos en inglés; perfiles y permisos son códigos de la base en español.
-
-  ## Documentación ejecutable
-
-  - Portada: http://localhost:3000/
-  - Swagger: http://localhost:3000/api/v1/docs
-  - OpenAPI JSON: http://localhost:3000/api/v1/openapi.json
+  Colección de Onix. Abrir README.md para variables, permisos y flujos manuales.
+  URL es el origen sin /api/v1; respuestas de negocio dentro de data.
+  Login devuelve data.paso: sesion, cambio_contrasena, configurar_mfa o mfa.
+  TOKEN es el Bearer; la renovación web usa el cookie jar de Bruno.
+  Una sesión por cuenta. No hay tests automáticos.
+  Swagger: http://localhost:3000/api/v1/docs.
+  Contrato actual: BDOnix/docs/CONTRATO_API.md (5 procedimientos por entidad).

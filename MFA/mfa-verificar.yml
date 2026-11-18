@@ -1,0 +1,39 @@
+info:
+  name: mfa-verificar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/mfa/verificar"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: web
+  body:
+    type: json
+    data: |-
+      {
+        "idDesafio": "{{ID_DESAFIO}}",
+        "codigo": "498929"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const data = res.getStatus() === 200 && body.success ? body.data : null;
+        bru.setEnvVar("TOKEN", data?.tokenAcceso ?? "");
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Completa login con data.paso=mfa. ID_DESAFIO procede del login; código del
+  correo/app. 200: sesión y tokens en data. 401: desafío/código inválido o vencido.

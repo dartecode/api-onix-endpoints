@@ -1,17 +1,14 @@
 name: ONIX LOCAL
 variables:
+  - name: ID_DESAFIO
+    value: cfa746fa-e889-4e6b-8695-f117b1c892a6
+    description: ""
+  - name: TOKEN_RENOVACION
+    value: ""
+    description: ""
   - name: URL
     value: http://localhost:3000
     description: Base del API local, sin barra final (los endpoints usan {{URL}}/api/v1/...)
   - name: TOKEN
-    value: ""
-    description: accessToken de la última sesión; lo guardan login y refresh
-  - name: REFRESH_TOKEN
-    value: ""
-    description: refreshToken móvil; lo guardan login y refresh con X-Onix-Client mobile
-  - name: USERNAME
-    value: admin.local
-    description: Cuenta local creada con pnpm db:seed
-  - name: PASSWORD
-    value: ""
-    description: Contraseña de tu cuenta local. Complétala solo en tu copia; no la subas.
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhN2NhZWM0Yy1hZjI4LTRjNWItOWRiYS0xYTkxZTZlNzhjY2YiLCJzaWQiOiJmOTJmZDExMy0zNDczLTQ3NTYtYTgyMi0yZjI0ZWVhNTI3ZmMiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMjA1NDIsImV4cCI6MTc5NTAyMTE0MiwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.ECd0FJYeKqGBeUGB_XEj4qBM3aIqtDhviwWsU4kHesM
+    description: Bearer de la última sesión; lo renueva iniciar-sesion (puede estar vencido)

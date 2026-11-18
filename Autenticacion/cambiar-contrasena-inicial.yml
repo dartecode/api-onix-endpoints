@@ -1,0 +1,69 @@
+info:
+  name: cambiar-contrasena-inicial
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/cambiar-contrasena-inicial"
+  headers:
+    - name: X-Onix-Client
+      value: web
+      description: Transporte de la credencial de renovación; acepta web o mobile
+    - name: Content-Type
+      value: application/json
+      description: Formato del cuerpo JSON
+  body:
+    type: json
+    data: |-
+      {
+        "nuevaContrasena": "DarioValdez123",
+        "confirmacionContrasena": "DarioValdez123"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Cambiar contraseña inicial (primer acceso)
+
+  `POST /api/v1/autenticacion/cambiar-contrasena-inicial`
+
+  Requiere el **Bearer restringido** que devuelve el login cuando
+  `data.paso` es `cambio_contrasena`. No funciona con una sesión normal.
+
+  ## Cuerpo
+
+  | Campo | Tipo | Reglas |
+  | --- | --- | --- |
+  | `nuevaContrasena` | string | 8 a 256 caracteres, minúscula, mayúscula y número o símbolo; sin recorte de espacios. |
+  | `confirmacionContrasena` | string | Debe coincidir exactamente. |
+
+  - No debe ser igual a la contraseña temporal actual.
+  - Los espacios no cuentan como carácter especial.
+  - Se rechazan campos adicionales.
+
+  ## Respuesta `200`
+
+  ```json
+  { "success": true, "statusCode": 200, "data": { "mensaje": "Contraseña actualizada. Inicia sesión con tu nueva contraseña." } }
+  ```
+
+  El cambio actualiza el hash **y revoca la sesión** en una sola transacción.
+  No emite tokens: después hay que volver a `iniciar-sesion` con la clave nueva.
+
+  ## Estados
+
+  | Código | Significado |
+  | --- | --- |
+  | `400` | Clave fuera de 8–256, composición inválida, confirmación distinta, reutilización de la clave temporal o datos inválidos. |
+  | `401` | Token o sesión no vigentes. |
+  | `403` | La sesión no es la del primer acceso (ya se cambió o es normal). |
+  | `409` | La cuenta o sesión cambió durante el cálculo del hash. |

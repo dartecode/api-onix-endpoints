@@ -1,0 +1,27 @@
+info:
+  name: renovar
+  type: http
+  seq: 5
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/renovar"
+  headers:
+    - name: X-Onix-Client
+      value: web
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: '{}'
+  auth:
+    type: none
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        bru.setEnvVar("TOKEN", res.getStatus() === 200 && body.success ? body.data.tokenAcceso : "");
+docs: |-
+  Web: cookie jar onix_refresh y cuerpo {}. Móvil: cambiar cabecera a mobile y
+  cuerpo a { "tokenRenovacion": "{{TOKEN_RENOVACION}}" }. 200: tokens en data;
+  guardar la nueva renovación móvil manualmente. 401: vencida, revocada o ya usada.

@@ -1,0 +1,13 @@
+info:
+  name: cerrar-sesion
+  type: http
+  seq: 6
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/cerrar-sesion"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Sin cuerpo. Revoca la sesión y limpia cookie. También acepta sesiones
+  restringidas. 200: data.mensaje; después me y renovar deben rechazar la sesión.

@@ -1,0 +1,58 @@
+info:
+  name: me
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{URL}}/api/v1/autenticacion/me"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # Consultar sesión actual
+
+  `GET /api/v1/autenticacion/me` — identidad, perfil y **permisos efectivos**
+  de la sesión vigente. Responde `Cache-Control: no-store`.
+
+  ## Encabezados
+
+  - `Authorization: Bearer <tokenAcceso>` (obligatorio).
+  - `X-Onix-Client` **no** es requerido en este endpoint.
+
+  ## Respuesta `200`
+
+  ```json
+  {
+    "success": true,
+    "statusCode": 200,
+    "data": {
+    "id": "<UUID>",
+    "usuario": "operador.prueba",
+    "nombres": "Operador de prueba",
+    "correo": "operador@example.com",
+    "perfil": "administrador",
+    "permisos": ["usuario.asignarPerfil", "usuario.crear"],
+    "mfaActivo": true
+    }
+  }
+  ```
+
+  - `data.usuario` es el identificador de login; `data.nombres` es el nombre personal.
+  - Permisos y perfil se leen de PostgreSQL en **cada** petición: cambiar o
+    revocar permisos se refleja sin esperar a que venza el JWT.
+
+  ## Estados
+
+  | Código | Significado |
+  | --- | --- |
+  | `401` | Token inválido, cuenta deshabilitada o sesión revocada/reemplazada. |
+  | `403` | Cambio inicial de contraseña pendiente (sesión restringida). |

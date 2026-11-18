@@ -1,0 +1,16 @@
+info:
+  name: Autenticacion
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Login y MFA emiten data.paso; TOKEN guarda data.tokenAcceso.
+    Inicial requiere cambio_contrasena; cambio propio y me requieren sesión completa.
+    X-Onix-Client obligatorio en login, renovar y mfa-verificar (web o mobile).
+    Renovación web por cookie, móvil por data.tokenRenovacion.
+    Tras cambio de contraseña o cierre volver a iniciar sesión.
+  type: text/markdown

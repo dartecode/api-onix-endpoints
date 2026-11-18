@@ -1,0 +1,23 @@
+info:
+  name: mfa-totp
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{URL}}/api/v1/autenticacion/mfa/totp"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Sesión completa o configurar_mfa. Sin cuerpo. Devuelve data.idDesafio,
+  qr y claveManual. Escanear QR en app y copiar idDesafio a ID_DESAFIO.
+  La configuración no cambia hasta confirmar. No compartir QR ni clave.

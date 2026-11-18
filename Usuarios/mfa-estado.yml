@@ -1,0 +1,14 @@
+info:
+  name: mfa-estado-usuario
+  type: http
+  seq: 8
+http:
+  method: GET
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000/mfa"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
+  usuario.gestionarMfa; la consulta actual también necesita usuario.ver
+  para comprobar alcance. 200: estado MFA en data, sin secreto.

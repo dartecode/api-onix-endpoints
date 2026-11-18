@@ -1,0 +1,21 @@
+info:
+  name: editar-usuario
+  type: http
+  seq: 6
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: '{ "nombres": "Operador actualizado" }'
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar el UUID de ejemplo en la URL por el ID del usuario objetivo.
+  usuario.editar. Enviar solo cambios: nombres, correo, perfil.
+  Cambiar perfil exige además usuario.asignarPerfil y revoca sesión objetivo.
+  200: usuario en data; 409: correo duplicado.

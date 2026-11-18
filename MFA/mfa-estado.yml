@@ -1,0 +1,22 @@
+info:
+  name: mfa-estado
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{URL}}/api/v1/autenticacion/mfa"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Estado del segundo factor propio. Sesión completa o configurar_mfa.
+  200: configuración en data, sin secreto TOTP.

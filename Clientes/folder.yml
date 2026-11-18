@@ -1,0 +1,10 @@
+info:
+  name: Clientes
+  type: folder
+  seq: 5
+
+docs:
+  content: |-
+    Administración de clientes. El ID en la URL es numérico. Permisos cliente.ver,
+    cliente.crear o cliente.editar según operación; alcance validado en la base.
+  type: text/markdown

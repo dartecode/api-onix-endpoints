@@ -1,0 +1,21 @@
+info:
+  name: cambiar-estado
+  type: http
+  seq: 7
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000/estado"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: '{ "accion": "desactivar" }'
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
+  usuario.editar. Acciones: activar, desactivar, desbloquear.
+  Desactivar revoca sesión y no permite actuar sobre sí mismo.
+  Activar conserva bloqueo; desbloquear reinicia intentos. 200: usuario en data.

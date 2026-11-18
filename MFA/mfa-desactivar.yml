@@ -1,0 +1,28 @@
+info:
+  name: mfa-desactivar
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{URL}}/api/v1/autenticacion/mfa"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: '{ "contrasena": "EscribeTuClaveActual1!" }'
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Sesión completa y contraseña actual. Si el perfil exige MFA, no se permite.
+  200: data.mensaje; 401: contraseña/sesión; 403: MFA obligatorio.

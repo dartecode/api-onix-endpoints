@@ -1,0 +1,24 @@
+info:
+  name: desbloquear-usuario
+  type: http
+  seq: 2
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/usuarios/00000000-0000-4000-8000-000000000000/estado"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-Onix-Client
+      value: web
+  body:
+    type: json
+    data: '{ "accion": "desbloquear" }'
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
+  Exige usuario.editar, sesión completa y alcance. Reinicia intentos y elimina
+  bloqueo; no activa la cuenta ni revive sesiones. 200: usuario en data.
+  401: sesión; 403: permiso; 404: cuenta fuera de alcance/no encontrada.
+  Usar otra cuenta para el objetivo. No recibe justificación en el contrato actual.
