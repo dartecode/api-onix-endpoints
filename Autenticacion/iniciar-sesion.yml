@@ -17,8 +17,8 @@ http:
     type: json
     data: |-
       {
-        "usuario": "supervisor.testmfa",
-        "contrasena": "hLRdTjb4KmpjCMxm"
+        "usuario": "admin",
+        "contrasena": "Admin123"
       }
   auth: inherit
 

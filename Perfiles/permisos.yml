@@ -1,0 +1,12 @@
+info:
+  name: catalogo-permisos
+  type: http
+  seq: 2
+http:
+  method: GET
+  url: "{{URL}}/api/v1/permisos"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere perfil.ver. 200: data es una lista sin paginación con codigo, nombre y modulo.

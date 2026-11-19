@@ -1,7 +1,7 @@
 name: ONIX LOCAL
 variables:
   - name: ID_DESAFIO
-    value: 60534b42-08f2-4b0a-b4c0-87644fc9b67b
+    value: 292ff687-db77-4c79-8395-952a6a86c273
     description: Último desafío capturado durante login o primer acceso
   - name: TOKEN_RENOVACION
     value: ""
@@ -10,5 +10,5 @@ variables:
     value: http://localhost:3000
     description: Base del API local, sin barra final (los endpoints usan {{URL}}/api/v1/...)
   - name: TOKEN
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MmE4N2E5Yi03MzA1LTQ4YmQtODZkYS00YmQ5ZjkxMzc5MDMiLCJzaWQiOiI2ZWEyM2IyMS03ODkwLTRiN2EtOTQ5Ny03N2UxNjJhYTQ1ZjgiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUwMzg3OTIsImV4cCI6MTc5NTAzOTM5MiwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.HExB1BIYAyqNm9UN2T3hJ4PDaAFo3kz1vSu56aJn7Bg
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNjIxZGVkNS00OTQ3LTQxZGEtODc1NC1mYjYzYjFjYjliNjQiLCJzaWQiOiIyMDY1YmQ0NC0wYjY4LTQwYWMtYTVkZS1mNWJiYWY0M2NmOWUiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJpYXQiOjE3OTUxMDcxNzAsImV4cCI6MTc5NTEwNzc3MCwiYXVkIjoib25peC1hcHBzIiwiaXNzIjoib25peC1hcGkifQ.V8W_vf2EOiKjW20jSJ0OYtDAcuqx3nbkxGqK4TyRxqU
     description: Bearer capturado por los pasos de autenticación

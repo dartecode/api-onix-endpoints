@@ -10,5 +10,5 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
-  usuario.gestionarMfa; la consulta actual también necesita usuario.ver
+  usuario.reiniciarMfa; la consulta actual también necesita usuario.ver
   para comprobar alcance. 200: estado MFA en data, sin secreto.

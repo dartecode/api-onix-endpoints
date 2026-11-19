@@ -10,6 +10,6 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Iniciar sesión con el actor autorizado y reemplazar el UUID de ejemplo en la URL.
-  usuario.gestionarMfa y alcance. Sin cuerpo. 200: data.mensaje.
+  usuario.reiniciarMfa y alcance. Sin cuerpo. 200: data.mensaje.
   Borra configuración y desafíos pendientes; el siguiente login solicita
   configurar MFA si el perfil lo exige.
