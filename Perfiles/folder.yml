@@ -1,0 +1,14 @@
+info:
+  name: Perfiles y permisos
+  type: folder
+  seq: 6
+request:
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs:
+  content: |-
+    Aplicar primero BDOnix/migraciones/001_perfiles_permisos.sql.
+    Consultar exige perfil.ver; reemplazar exige perfil.editar.
+    Cada cambio real revoca las sesiones del perfil afectado, incluida la del actor.
+  type: text/markdown

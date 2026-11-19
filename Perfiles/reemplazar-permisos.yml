@@ -1,0 +1,24 @@
+info:
+  name: reemplazar-permisos-perfil
+  type: http
+  seq: 3
+http:
+  method: PUT
+  url: "{{URL}}/api/v1/perfiles/operador/permisos"
+  headers:
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+  body:
+    type: json
+    data: |-
+      { "permisos": ["cliente.ver", "usuario.ver"] }
+docs: |-
+  Requiere perfil.editar. Reemplaza la lista completa, no agrega permisos.
+  Modificar el ejemplo según la matriz deseada antes de enviarlo.
+  200: data es el perfil actualizado. Si hay cambios cierra sus sesiones.
+  400 VALIDATION_ERROR: formato/repetidos; PERMISO_INVALIDO: details con códigos desconocidos.
+  403 FORBIDDEN: sin permiso o intento de quitar perfil.editar al administrador.
+  404 PERFIL_INVALIDO: perfil inexistente.

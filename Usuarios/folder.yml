@@ -12,7 +12,7 @@ docs:
   content: |-
     Sesión completa y permisos por operación. Crear exige usuario.crear y
     usuario.asignarPerfil; consultar usuario.ver; editar, estado y restablecer
-    usuario.editar; MFA usuario.gestionarMfa. La base comprueba el alcance.
+    usuario.editar; MFA usuario.reiniciarMfa. La base comprueba el alcance.
     El API genera las temporales para alta/restablecimiento y las envía por correo.
     El primer administrador se crea con BDOnix/semillas/admin_inicial.sql y
     el hash de pnpm admin:hash, según APIOnix/docs/PRIMER-ADMIN.md.
