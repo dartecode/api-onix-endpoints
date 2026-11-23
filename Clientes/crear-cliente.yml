@@ -10,10 +10,12 @@ http:
       value: application/json
   body:
     type: json
-    data: '{ "ruc": "1790012345001", "razonSocial": "Cliente de prueba", "sector": "Retail" }'
+    data: '{ "ruc": "1712345675001", "razonSocial": "Cliente de prueba", "sector": "Retail" }'
   auth:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  cliente.crear y perfil interno. RUC de 13 dígitos. 201: cliente en data;
-  409: RUC duplicado. Usar data.id directamente en las URLs de consulta o edición.
+  cliente.crear y perfil interno. Campo ruc admite cédula (10 dígitos) o RUC
+  (13 dígitos); el verificador se valida en el SP. sector opcional. 201:
+  cliente en data con estadoCambiadoEn y motivoCambioEstado; 409: identificación
+  duplicada; 400: formato o nombre inválidos. Usar data.id en las URLs.

@@ -16,7 +16,7 @@ http:
     data: |-
       {
         "idDesafio": "{{ID_DESAFIO}}",
-        "codigo": "652823"
+        "codigo": "336090"
       }
 
 runtime:

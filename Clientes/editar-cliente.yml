@@ -2,19 +2,37 @@ info:
   name: editar-cliente
   type: http
   seq: 4
+
 http:
   method: PATCH
-  url: "{{URL}}/api/v1/clientes/1"
+  url: "{{URL}}/api/v1/clientes/4"
   headers:
     - name: Content-Type
       value: application/json
   body:
     type: json
-    data: '{ "razonSocial": "Cliente actualizado" }'
+    data: |-
+      {
+        "razonSocial": "Cliente actualizado",
+        "estado": "suspendido",
+        "motivo": "Prueba del módulo"
+      }
   auth:
     type: bearer
     token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
 docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
-  cliente.editar. Campos opcionales razonSocial, sector, estado
-  (activo/suspendido/baja). 200: cliente en data; 404: fuera de alcance.
+  cliente.editar. Campos opcionales: razonSocial, sector, estado
+  (activo/suspendido/baja) y motivo. Enviar estado exige motivo (1-500).
+  sector: null limpia el campo; omitirlo lo conserva. ruc no es editable:
+  PATCH con ruc responde 400, igual que cuerpo vacío o estado null.
+  200: cliente en data con estadoCambiadoEn y motivoCambioEstado;
+  404: inexistente o fuera de alcance.

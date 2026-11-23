@@ -7,6 +7,8 @@ Swagger: http://localhost:3000/api/v1/docs; JSON: /api/v1/openapi.json.
 ## Preparación
 
 1. Instalar/actualizar la base según `BDOnix/README.md`, usando `db/instalar.sql`.
+   Sobre una base existente aplicar `BDOnix/migraciones/002_clientes.sql` antes
+   de desplegar la API actualizada.
    El script `scripts/20261117_login_bloqueo.sql` corresponde al contrato anterior:
    no aplicarlo sobre el esquema actual de `db/`.
 2. Arrancar APIOnix con PostgreSQL real. Sin SMTP en desarrollo, las temporales y
@@ -75,7 +77,8 @@ Una sola sesión activa por cuenta: un login que emite sesión sustituye la ante
   operaciones de MFA.
 - Usuarios: alta, listado, consulta, edición, estado, desbloqueo, restablecimiento
   y consulta/reinicio MFA.
-- Clientes: alta, listado, consulta y edición.
+- Clientes: alta, listado con sector, consulta, edición con motivo de estado,
+  resumen e historial.
 - Salud: live y ready.
 
 Los permisos administrativos se comprueban en cada petición y dentro de los SP.

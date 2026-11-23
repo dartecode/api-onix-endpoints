@@ -7,4 +7,6 @@ docs:
   content: |-
     Administración de clientes. El ID en la URL es numérico. Permisos cliente.ver,
     cliente.crear o cliente.editar según operación; alcance validado en la base.
+    Identificación de 10 o 13 dígitos, inmutable después del alta. Estado con motivo
+    obligatorio. Detalle y casos: APIOnix/docs/funcionalidad/CLIENTES.md.
   type: text/markdown
