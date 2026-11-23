@@ -9,5 +9,5 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  cliente.ver. Filtros opcionales busqueda y estado (activo/suspendido/baja).
-  200: clientes en data, paginación en meta.
+  cliente.ver. Filtros opcionales busqueda, estado (activo/suspendido/baja)
+  y sector (coincidencia exacta). 200: clientes en data, paginación en meta.
