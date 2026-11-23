@@ -32,7 +32,8 @@ docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
   cliente.editar. Campos opcionales: razonSocial, sector, estado
   (activo/suspendido/baja) y motivo. Enviar estado exige motivo (1-500).
-  sector: null limpia el campo; omitirlo lo conserva. ruc no es editable:
-  PATCH con ruc responde 400, igual que cuerpo vacío o estado null.
+  sector: null limpia el campo; omitirlo lo conserva. tipoIdentificacion e
+  identificacion no son editables: PATCH con ellos responde 400, igual que
+  cuerpo vacío o estado null.
   200: cliente en data con estadoCambiadoEn y motivoCambioEstado;
   404: inexistente o fuera de alcance.
