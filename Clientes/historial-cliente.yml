@@ -11,5 +11,6 @@ http:
 docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
   cliente.ver. Historial paginado de altas y ediciones exitosas, más
-  recientes primero. Cada item: id, idUsuario, accion, fecha, motivo,
-  anterior y nuevo. 200; 404: inexistente o fuera de alcance.
+  recientes primero. Cada item conserva idUsuario y añade
+  usuario: { id, nombre } o null, sin requerir usuario.ver; también incluye
+  accion, fecha, motivo, anterior y nuevo. 200; 404: inexistente o fuera de alcance.
