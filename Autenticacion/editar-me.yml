@@ -1,0 +1,34 @@
+info:
+  name: editar-me
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/autenticacion/me"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "nombres": "Administrador Onix",
+        "correo": "admin@garmilseg.com"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Sesión completa, sin permisos especiales. Permite editar nombres (1-100) y/o
+  correo (hasta 150, único) de la propia cuenta. Al menos uno es obligatorio.
+  200: devuelve la sesión actualizada con el mismo formato que GET /autenticacion/me;
+  400 VALIDATION_ERROR; 409 DUPLICATE_RECORD si el correo ya está en uso.

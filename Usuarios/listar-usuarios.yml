@@ -9,5 +9,6 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  usuario.ver. Filtros opcionales busqueda, perfil y estado (activo/inactivo).
-  200: registros en data y paginación en meta. Copiar UUID del objetivo.
+  usuario.ver. Filtros opcionales busqueda, perfil, estado (activo/inactivo)
+  e idCliente. 200: registros en data (incluyen cliente y sesionActiva) y
+  paginación en meta. Copiar UUID del objetivo.
