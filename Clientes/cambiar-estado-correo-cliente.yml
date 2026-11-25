@@ -1,0 +1,24 @@
+info:
+  name: cambiar-estado-correo-cliente
+  type: http
+  seq: 10
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/clientes/1/correos/1/estado"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "estado": "inactivo"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 y 1 en la URL por idCliente e idCorreo.
+  cliente.gestionarCorreos. Activa o desactiva (activo | inactivo) un correo
+  con origen = onix. 200: ClienteCorreoDto en data; 422 EMAIL_FROM_PERSEO si
+  el correo proviene de Perseo; 404 CLIENT_NOT_FOUND / CLIENT_EMAIL_NOT_FOUND.

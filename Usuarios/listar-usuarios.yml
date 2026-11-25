@@ -9,7 +9,6 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  usuario.ver. Reemplazar idCliente por el identificador numérico del cliente
-  o quitarlo para listar todo el alcance. Se combina con busqueda, perfil y
-  estado (activo/inactivo). Un cliente sin usuarios devuelve data vacío y no 404.
-  200: registros en data y paginación en meta. Copiar UUID del objetivo.
+  usuario.ver. Filtros opcionales busqueda, perfil, estado (activo/inactivo)
+  e idCliente. 200: registros en data (incluyen cliente y sesionActiva) y
+  paginación en meta. Copiar UUID del objetivo.

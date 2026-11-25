@@ -1,0 +1,14 @@
+info:
+  name: listar-correos-cliente
+  type: http
+  seq: 7
+http:
+  method: GET
+  url: "{{URL}}/api/v1/clientes/1/correos"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 en la URL por el identificador numérico del cliente.
+  cliente.ver. Devuelve la lista de correos del cliente (origen perseo u onix),
+  sin paginar. 200: ClienteCorreoDto[] en data; 404 CLIENT_NOT_FOUND.

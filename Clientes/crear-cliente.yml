@@ -2,6 +2,7 @@ info:
   name: crear-cliente
   type: http
   seq: 3
+
 http:
   method: POST
   url: "{{URL}}/api/v1/clientes"
@@ -10,10 +11,23 @@ http:
       value: application/json
   body:
     type: json
-    data: '{ "tipoIdentificacion": "ruc", "identificacion": "1712345675001", "razonSocial": "Cliente de prueba", "sector": "Retail" }'
+    data: |-
+      {
+        "tipoIdentificacion": "pasaporte",
+        "identificacion": "A-12",
+        "razonSocial": "Prueba Pasaporte Inválido"
+      }
   auth:
     type: bearer
     token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
 docs: |-
   cliente.crear y perfil interno. tipoIdentificacion admite ruc (13 dígitos),
   cedula (10 dígitos) o pasaporte (5 a 20 caracteres alfanuméricos en mayúsculas);

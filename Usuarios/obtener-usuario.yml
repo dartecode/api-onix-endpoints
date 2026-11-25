@@ -10,4 +10,5 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Reemplazar el UUID de ejemplo en la URL por el ID del usuario objetivo.
-  usuario.ver. 200: usuario en data; 404: inexistente o fuera de alcance.
+  usuario.ver. 200: usuario en data (con cliente y sesionActiva);
+  404 USER_NOT_FOUND: inexistente o fuera de alcance.

@@ -39,9 +39,11 @@ docs: |-
     "usuario": "operador.prueba",
     "nombres": "Operador de prueba",
     "correo": "operador@example.com",
-    "perfil": "administrador",
-    "permisos": ["usuario.asignarPerfil", "usuario.crear"],
-    "mfaActivo": true
+      "perfil": "administrador",
+      "permisos": ["usuario.asignarPerfil", "usuario.crear"],
+      "mfaActivo": true,
+      "alcance": { "todos": true },
+      "inactividadSegundos": 3600
     }
   }
   ```

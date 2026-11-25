@@ -1,0 +1,26 @@
+info:
+  name: agregar-correo-cliente
+  type: http
+  seq: 8
+http:
+  method: POST
+  url: "{{URL}}/api/v1/clientes/1/correos"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "correo": "alertas@comercialandina.com",
+        "usos": ["alertas", "reportes"]
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 en la URL por el identificador numérico del cliente.
+  cliente.gestionarCorreos. Usos válidos: facturacion, notificaciones,
+  reportes, alertas, otro (al menos uno). Se crea con origen = onix y
+  estado = activo. 201: ClienteCorreoDto en data; 409 DUPLICATE_RECORD si el
+  correo ya existe en el cliente; 404 CLIENT_NOT_FOUND.
