@@ -9,7 +9,8 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  Requiere instalacion.ver. Filtros opcionales: idCliente (entero positivo), busqueda
-  (nombre, dirección o ciudad) y estado (activo/inactivo). pagina desde 1, limite hasta 100.
+  Requiere instalacion.ver. Filtros opcionales y combinables: idCliente (entero positivo),
+  idProvincia, idCanton e idParroquia (IDs de Catálogos), busqueda (nombre, dirección o
+  nombre del cantón) y estado (activo/inactivo). pagina desde 1, limite hasta 100.
   200: lista en data y paginación en meta. Sin permiso: 403 FORBIDDEN.
   Con la matriz inicial, un Operador recibe 403 y un Auditor interno 200.

@@ -1,0 +1,28 @@
+info:
+  name: sincronizar-catalogos
+  type: http
+  seq: 4
+http:
+  method: POST
+  url: "{{URL}}/api/v1/catalogos/sincronizar"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+settings:
+  timeout: 0
+docs: |-
+  Sin cuerpo. Requiere perfil de tipo interno y catalogo.sincronizar.
+  Configurar PERSEO_SERVER, PERSEO_API_KEY y PERSEO_TIMEOUT_MS solo en el backend
+  (.env.docker en desarrollo); no poner la clave en Bruno.
+  Consulta provincias, cantones y parroquias en Perseo, valida códigos y jerarquía, y aplica
+  los tres conjuntos de forma atómica. Los registros ausentes se conservan y se cuentan.
+  200: data con idSincronizacion, iniciadoEn, finalizadoEn y, para provincias, cantones y
+  parroquias, los contadores recibidos, creados, actualizados, sinCambios y ausentesEnPerseo.
+  Repetir sin cambios no duplica registros; en la verificación local quedaron 25/228/1436 sin cambios.
+  401: token ausente, expirado o sesión no vigente/completa.
+  403 FORBIDDEN: sin permiso o perfil no interno.
+  409 CATALOG_SYNC_IN_PROGRESS/CATALOG_SYNC_LOCK_LOST: bloqueo de sincronización.
+  503 PERSEO_NOT_CONFIGURED/PERSEO_UNAVAILABLE/PERSEO_INVALID_RESPONSE/
+  PERSEO_INVALID_GEOGRAPHY/CATALOG_SYNC_FAILED: configuración, proveedor o transacción;
+  el catálogo anterior se conserva.
+  Después de una sincronización correcta, ejecutar las tres consultas de Catálogos.

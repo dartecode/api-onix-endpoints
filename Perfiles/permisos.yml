@@ -10,3 +10,5 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Requiere perfil.ver. 200: data es una lista sin paginación con codigo, nombre y modulo.
+  Incluye catalogo.sincronizar, asignado al superadministrador y a la matriz inicial de
+  administradores. La sincronización de clientes usa cliente.sincronizar.

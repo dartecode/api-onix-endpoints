@@ -1,0 +1,17 @@
+info:
+  name: Catálogos geográficos
+  type: folder
+  seq: 8
+
+docs:
+  content: |-
+    Provincias, cantones y parroquias se sincronizan desde Perseo y se consultan al API local.
+    Las cuatro rutas exigen sesión completa con TOKEN y perfil de tipo interno.
+    Las consultas no requieren permiso propio; sincronizar exige catalogo.sincronizar.
+    data es una lista sin paginar de { id, nombre } ordenada por nombre.
+    Los cantones de Perseo (ciudadesid/ciudad) se publican como cantones.
+    Incluir zonas no delimitadas si Perseo las entrega; no usar listas fijas de 24/221.
+    En instalaciones se envían idCanton e idParroquia; la provincia se deriva del cantón.
+    Reemplazar los IDs numéricos de ejemplo por los del ambiente.
+    Detalle: APIOnix/docs/funcionalidad/CATALOGO-GEOGRAFICO.md.
+  type: text/markdown

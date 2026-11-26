@@ -1,0 +1,18 @@
+info:
+  name: listar-cantones
+  type: http
+  seq: 2
+http:
+  method: GET
+  url: "{{URL}}/api/v1/catalogos/provincias/17/cantones"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 17 por el id de data obtenido en listar-provincias. Sin cuerpo.
+  Exige sesión completa con TOKEN y perfil de tipo interno; no requiere permiso propio.
+  200: data es una lista sin paginar de { id, nombre } de los cantones de esa provincia.
+  El id corresponde a ciudadesid de Perseo. El ejemplo 17 corresponde a Pichincha;
+  en ese ambiente Quito es { id: 1701, nombre: "QUITO" }.
+  400 VALIDATION_ERROR: id no numérico. 404 PROVINCE_NOT_FOUND: provincia inexistente.
+  401: token ausente, expirado o sesión no vigente/completa. 403 FORBIDDEN: perfil no interno.

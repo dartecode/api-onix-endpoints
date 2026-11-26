@@ -44,6 +44,8 @@ Escribir contraseñas y códigos directamente en el cuerpo de cada petición.
 Reemplazar los IDs de ejemplo en las URLs: UUID para usuarios; números para clientes,
 instalaciones, puestos y correos. El ID interno de un cliente no es su `idPerseo`.
 Las peticiones nuevas usan `1` como ejemplo; copiar el `data.id` real antes de ejecutarlas.
+Los ejemplos de Catálogos usan provincia `17`, cantón `1701` y parroquia `170151` solo como
+referencia; obtener los IDs vigentes desde las consultas geográficas de cada ambiente.
 Las peticiones administrativas usan TOKEN: iniciar sesión con el actor autorizado.
 Si se alternan cuentas, copiar el token del actor directamente en el Bearer de la
 petición que deba conservarlo, antes de iniciar sesión con la otra cuenta.
@@ -93,9 +95,10 @@ Una sola sesión activa por cuenta: un login que emite sesión sustituye la ante
   estado, desbloqueo, restablecimiento y consulta/reinicio MFA.
 - Clientes: listado y filtros, ficha, resumen, historial, sincronización manual desde Perseo,
   comprobación de codificación de MAURER y gestión de correos locales.
+- Catálogos: provincias, cantones y parroquias sincronizados desde Perseo y sincronización manual.
 - Perfiles: catálogo, permisos y reemplazo de matriz.
-- Instalaciones: las 11 rutas de instalaciones y puestos, incluidos horario, estado,
-  ubicación desde mapa/GPS, verificación e historial.
+- Instalaciones: las 11 rutas de instalaciones y puestos, con selección geográfica por IDs,
+  horario, estado, ubicación desde mapa/GPS, verificación e historial.
 - Salud: live y ready.
 
 Los permisos se leen de la base en cada petición. Los servicios y políticas del API aplican
@@ -128,10 +131,52 @@ la regla no depende de sus IDs. Los demás datos inválidos se corrigen en Perse
 Sin configuración: `503 PERSEO_NOT_CONFIGURED`; conflicto de sincronización: `409`.
 No hay clientes de prueba en la semilla; para crear una instalación se necesita un cliente activo.
 
+## Catálogo geográfico
+
+Perseo también es la fuente de provincias, cantones y parroquias. La semilla no crea una geografía
+fija: ejecutar la sincronización manual antes de usar los selectores.
+
+1. Configurar los mismos `PERSEO_SERVER`, `PERSEO_API_KEY` y `PERSEO_TIMEOUT_MS` del backend
+   descritos para clientes. La clave no se envía desde Bruno.
+2. Con una sesión interna que tenga `catalogo.sincronizar`, ejecutar
+   `Catálogos/sincronizar-catalogos` sin cuerpo. Revisar los contadores por nivel en `data`:
+   `recibidos`, `creados`, `actualizados`, `sinCambios` y `ausentesEnPerseo`. Los registros
+   ausentes se conservan. Si otra sincronización está en curso, responderá `409`.
+3. Recorrer `listar-provincias` → `listar-cantones` → `listar-parroquias`, copiando el `id` de
+   cada respuesta a la URL siguiente. Las tres devuelven `{ id, nombre }` sin paginar, ordenadas
+   por nombre; no requieren permiso propio, pero sí sesión completa y perfil interno.
+4. Usar esos IDs en instalaciones como `idCanton` e `idParroquia`. La provincia se deriva del
+   cantón; no se envía como texto. Al cambiar de cantón, enviar una parroquia compatible o
+   `idParroquia: null`.
+
+No asumir las cifras clásicas de 24 provincias y 221 cantones. En la verificación local de
+Perseo llegaron 25 provincias, 228 cantones y 1.436 parroquias; Quito (`1701`) tuvo 70
+parroquias y una de sus parroquias es `170151` ALANGASÍ. Incluir zonas no delimitadas si el
+proveedor las entrega. Las lecturas `404` son `PROVINCE_NOT_FOUND` o `CANTON_NOT_FOUND`;
+la sincronización puede responder `503` si falla la configuración, el proveedor o la
+validación de jerarquía. Un perfil de cliente recibe `403 FORBIDDEN`.
+
+Contrato y casos en [CATALOGO-GEOGRAFICO.md](../APIOnix/docs/funcionalidad/CATALOGO-GEOGRAFICO.md)
+y [INSTALACIONES.md](../APIOnix/docs/funcionalidad/INSTALACIONES.md).
+
 ## Instalaciones y puestos
 
 Abrir la carpeta **Instalaciones y puestos** y usar una sesión completa con los permisos requeridos.
 La petición `crear-instalacion` lleva un ejemplo nocturno; `editar-instalacion`, uno de 24 horas.
+Los ejemplos incluyen `idCanton` e `idParroquia` tomados del catálogo; reemplazarlos por los IDs
+vigentes del ambiente.
+
+### Geografía
+
+1. Obtener provincia, cantón y parroquia desde **Catálogos**. Enviar solo `idCanton` e
+   `idParroquia`; la provincia se calcula y devuelve como objeto `{ id, nombre }`.
+2. Crear una instalación con un cantón existente y, si se envía, una parroquia de ese cantón.
+   Un cantón inexistente o una parroquia ajena responde `400 VALIDATION_ERROR`.
+3. En `editar-instalacion`, omitir un ID conserva el valor y `null` lo elimina. Al cambiar el
+   cantón, enviar una parroquia compatible o `idParroquia: null`.
+4. Comprobar que ficha y listado devuelven `canton`, `provincia` y `parroquia` como objetos o `null`.
+   Los filtros `idProvincia`, `idCanton` e `idParroquia` son combinables; `busqueda` incluye el
+   nombre del cantón. Las fotos nuevas del historial incluyen los IDs y nombres geográficos.
 
 ### Horarios
 

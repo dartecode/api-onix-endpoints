@@ -12,7 +12,9 @@ docs: |-
   Reemplazar 1 por el ID de la instalación. Requiere instalacion.ver.
   200: historial en data, del más reciente al más antiguo; paginación en meta.
   Cada entrada incluye id, idUsuario, usuario { id, nombre } o null, accion, fecha,
-  motivo, anterior y nuevo. Las fotos conservan claves snake_case.
+  motivo, anterior y nuevo. Las fotos conservan claves snake_case. Las altas y ediciones
+  nuevas incluyen id_canton, canton_nombre, id_provincia, provincia_nombre, id_parroquia y
+  parroquia_nombre; las entradas anteriores conservan su formato original.
   Crear, editar y cambiar el estado de un puesto genera PUESTO_CREADO, PUESTO_ACTUALIZADO
   y PUESTO_ESTADO: las entradas nuevas tienen motivo=null y nuevo.puesto_nombre.
   En actualizaciones, anterior.puesto_nombre conserva el nombre previo.

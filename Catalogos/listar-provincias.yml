@@ -1,0 +1,17 @@
+info:
+  name: listar-provincias
+  type: http
+  seq: 1
+http:
+  method: GET
+  url: "{{URL}}/api/v1/catalogos/provincias"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Sin cuerpo. Exige sesión completa con TOKEN y perfil de tipo interno; no requiere permiso propio.
+  200: data es una lista sin paginar de { id, nombre }, ordenada por nombre e incluye
+  zonas no delimitadas si Perseo las entrega. El ambiente local verificado tiene 25 provincias;
+  no usar esa cifra como lista fija.
+  401: token ausente, expirado o sesión no vigente/completa. 403 FORBIDDEN: perfil no interno.
+  Antes de las consultas de hijos, ejecutar sincronizar-catalogos con un actor autorizado.

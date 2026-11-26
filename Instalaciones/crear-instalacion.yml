@@ -15,8 +15,8 @@ http:
         "idCliente": 1,
         "nombre": "Bodega Norte",
         "direccion": "Av. 6 de Diciembre y Gaspar de Villarroel",
-        "ciudad": "Quito",
-        "provincia": "Pichincha",
+        "idCanton": 1701,
+        "idParroquia": 170151,
         "referencia": "Ingreso por el portón principal",
         "zonaHoraria": "America/Guayaquil",
         "horaApertura": "18:00",
@@ -30,7 +30,12 @@ docs: |-
   Requiere instalacion.crear. Reemplazar idCliente por el ID interno de un cliente activo
   sincronizado desde Perseo (no por idPerseo). Obligatorios: idCliente, nombre (máx. 100),
   direccion (máx. 500), zonaHoraria y tieneCarteles. Zonas: America/Guayaquil o Pacific/Galapagos.
-  Opcionales: ciudad, provincia, referencia, horaApertura, horaCierre, fechaVerificacionCarteles.
+  Opcionales: idCanton, idParroquia, referencia, horaApertura, horaCierre y
+  fechaVerificacionCarteles. Obtener los IDs desde Catálogos; la provincia se deriva del cantón.
+  El ejemplo usa Quito (1701) y ALANGASÍ (170151) del ambiente verificado; reemplazar por los
+  IDs vigentes. ciudad y provincia como texto ya no se aceptan en el cuerpo.
+  El cantón debe existir; la parroquia es opcional pero debe pertenecer al cantón.
+  Cantón inexistente o parroquia inexistente/incompatible: 400 VALIDATION_ERROR.
   El ejemplo cruza medianoche y debe devolver 201. Guardar data.id para las siguientes URLs.
   Para 24 horas enviar ambas horas como 00:00; sin horario, omitir ambas o enviar ambas null.
   Horas iguales distintas de 00:00 o solo una informada: 400 INVALID_SCHEDULE.

@@ -12,6 +12,9 @@ docs:
     La matriz inicial permite consultar a superadmin, administrador, supervisor, tecnico y
     auditorInterno. Operador, gerencia, dpd y los tres perfiles de cliente no reciben ese permiso.
     La autorización usa la matriz vigente; no se decide por el nombre del perfil ni por el menú.
+    La geografía se selecciona con idCanton e idParroquia de la carpeta Catálogos. La provincia
+    se deriva del cantón: ciudad y provincia como texto ya no se aceptan. En PATCH, omitir un ID
+    conserva el valor y null lo elimina; la parroquia debe pertenecer al cantón resultante.
     Horario nocturno válido; 00:00 a 00:00 significa 24 horas. Otras horas iguales producen
     400 INVALID_SCHEDULE. Las nuevas auditorías PUESTO_* tienen motivo null y puesto_nombre
     en las fotos anterior/nuevo. No hay borrado físico desde estas rutas.
