@@ -9,6 +9,7 @@ docs:
     distinto de idPerseo. No hay alta/edición comercial local: usar sincronizar-clientes.
     Consulta con cliente.ver; sincronización con cliente.sincronizar y perfil interno;
     correos locales con cliente.gestionarCorreos. El API aplica permisos y alcance con Prisma.
+    El uso facturacion se reserva al correo que llega de Perseo; en Onix solo se puede conservar o quitar.
     Estados: activo/inactivo; ambos visibles. Ausentes del proveedor: enPerseo=false, sin borrado.
     Datos y estado se corrigen en Perseo. La semilla no crea clientes de prueba.
     Detalle y casos: APIOnix/docs/funcionalidad/CLIENTES.md.

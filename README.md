@@ -129,6 +129,12 @@ de importar. `total` incluye todos los recibidos y `excluidos` cuenta estas omis
 Los registros 1 y 71 del servidor verificado corresponden a esos consumidores finales;
 la regla no depende de sus IDs. Los demás datos inválidos se corrigen en Perseo.
 Sin configuración: `503 PERSEO_NOT_CONFIGURED`; conflicto de sincronización: `409`.
+
+El uso `facturacion` pertenece al correo que llega de Perseo. En `agregar-correo-cliente` y al
+agregarlo en `editar-usos-correo-cliente`, el API responde `400 VALIDATION_ERROR` con
+"La facturación va al correo que llega de Perseo."; conservarlo o quitarlo en un correo existente
+es válido.
+
 No hay clientes de prueba en la semilla; para crear una instalación se necesita un cliente activo.
 
 ## Catálogo geográfico

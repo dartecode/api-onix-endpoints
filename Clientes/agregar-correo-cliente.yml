@@ -20,7 +20,9 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
-  cliente.gestionarCorreos. Usos válidos: facturacion, notificaciones,
-  reportes, alertas, otro (al menos uno). Se crea con origen = onix y
-  estado = activo. 201: ClienteCorreoDto en data; 409 DUPLICATE_RECORD si el
-  correo ya existe en el cliente; 404 CLIENT_NOT_FOUND.
+  cliente.gestionarCorreos. Catálogo de usos: facturacion, notificaciones,
+  reportes, alertas, otro (al menos uno). facturacion es exclusivo del correo
+  de Perseo: enviar {"correo":"facturacion@ejemplo.com","usos":["facturacion"]}
+  responde 400 VALIDATION_ERROR, "La facturación va al correo que llega de Perseo."
+  Se crea con origen = onix y estado = activo. 201: ClienteCorreoDto en data;
+  409 DUPLICATE_RECORD si el correo ya existe en el cliente; 404 CLIENT_NOT_FOUND.
