@@ -200,7 +200,7 @@ Un formato como `25:00` responde `400 VALIDATION_ERROR`, no `INVALID_SCHEDULE`.
 y `auditorInterno`. No se asigna a `operador`, `gerencia`, `dpd`, `clienteAdministrador`,
 `clienteResponsableInstalacion` ni `clienteConsulta`. La autorización depende de la matriz vigente.
 
-Para una base ya creada, la semilla no retira el permiso concedido anteriormente:
+Para una base ya creada, la semilla no retira `instalacion.ver` concedido anteriormente:
 
 1. Ejecutar `Perfiles/listar` con un actor con `perfil.ver` y `perfil.editar`.
 2. En cada uno de los seis perfiles afectados, copiar la lista actual, retirar solo
@@ -209,6 +209,30 @@ Para una base ya creada, la semilla no retira el permiso concedido anteriormente
 3. Los cambios reales se auditan y revocan las sesiones del perfil. Volver a iniciar sesión.
 4. Con Operador: listado, ficha e historial → `403 FORBIDDEN`. Con Auditor interno con permiso:
    listado → `200`. Volver a la cuenta autorizada para continuar los cambios.
+
+### Usuarios y permisos de consulta
+
+`usuario.ver` se asigna inicialmente a `superadmin`, `administrador`, `supervisor`,
+`auditorInterno` y `clienteAdministrador`. Este último lo ejerce solo sobre los usuarios de su
+cliente. No se asigna a `gerencia` ni a `dpd`: la matriz sigue la fila "Administrar usuarios
+internos".
+
+A diferencia de `instalacion.ver`, en bases ya creadas `pnpm db:seed` elimina `usuario.ver` de
+`seguridad.roles_permisos` para gerencia y DPD y revoca sus sesiones vigentes en la misma
+transacción. No hace falta enviar el PUT para retirarlo; si se vuelve a conceder con
+`Perfiles/reemplazar-permisos`, la siguiente semilla lo quitará otra vez.
+
+1. Ejecutar `Perfiles/listar` con `perfil.ver`: gerencia y DPD deben quedar solo con
+   `cliente.ver`; supervisor, auditor interno y cliente administrador conservan `usuario.ver`.
+2. Si el ambiente no tiene cuentas con esos perfiles, crearlas con `Usuarios/crear-usuario`
+   (la de cliente administrador necesita un `idCliente` activo) e iniciar sesión con
+   `Autenticacion/iniciar-sesion`, completando cambio inicial y MFA cuando aparezcan.
+3. Ejecutar `Usuarios/listar-usuarios` con cada token: `403 FORBIDDEN` con Gerencia y DPD; `200`
+   con Supervisor y Auditor interno; `200` y solo usuarios de su empresa con Cliente
+   administrador.
+4. Repetir la semilla: no debe volver a cambiar la matriz. Para comprobar la revocación, conceder
+   `usuario.ver` a Gerencia con `Perfiles/reemplazar-permisos`, iniciar sesión y repetir la
+   semilla; el token anterior debe dar `401 SESSION_INACTIVE`.
 
 ### Puestos, historial y ubicación
 
