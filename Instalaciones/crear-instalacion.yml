@@ -1,0 +1,41 @@
+info:
+  name: crear-instalacion
+  type: http
+  seq: 3
+http:
+  method: POST
+  url: "{{URL}}/api/v1/instalaciones"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "idCliente": 1,
+        "nombre": "Bodega Norte",
+        "direccion": "Av. 6 de Diciembre y Gaspar de Villarroel",
+        "ciudad": "Quito",
+        "provincia": "Pichincha",
+        "referencia": "Ingreso por el portón principal",
+        "zonaHoraria": "America/Guayaquil",
+        "horaApertura": "18:00",
+        "horaCierre": "08:00",
+        "tieneCarteles": false
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere instalacion.crear. Reemplazar idCliente por el ID interno de un cliente activo
+  sincronizado desde Perseo (no por idPerseo). Obligatorios: idCliente, nombre (máx. 100),
+  direccion (máx. 500), zonaHoraria y tieneCarteles. Zonas: America/Guayaquil o Pacific/Galapagos.
+  Opcionales: ciudad, provincia, referencia, horaApertura, horaCierre, fechaVerificacionCarteles.
+  El ejemplo cruza medianoche y debe devolver 201. Guardar data.id para las siguientes URLs.
+  Para 24 horas enviar ambas horas como 00:00; sin horario, omitir ambas o enviar ambas null.
+  Horas iguales distintas de 00:00 o solo una informada: 400 INVALID_SCHEDULE.
+  Mensaje de horas iguales: El cierre no puede ser igual a la apertura. Para todo el día, usa 00:00 a 00:00.
+  Formato inválido (ej. 25:00): 400 VALIDATION_ERROR.
+  404 CLIENT_NOT_FOUND: cliente inexistente/fuera de alcance; 422 CLIENT_INACTIVE: cliente inactivo;
+  409 DUPLICATE_RECORD: ese cliente ya tiene una instalación con el mismo nombre.
+  La ubicación se registra mediante registrar-ubicacion, no en este cuerpo.

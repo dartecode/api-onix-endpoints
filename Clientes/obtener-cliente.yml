@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{URL}}/api/v1/clientes/8"
+  url: "{{URL}}/api/v1/clientes/1"
   auth:
     type: bearer
     token: "{{TOKEN}}"
@@ -19,4 +19,8 @@ settings:
 
 docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
-  cliente.ver. 200: cliente en data; 404: inexistente o fuera de alcance.
+  cliente.ver. 200: cliente en data con idPerseo, enPerseo, estado (activo/inactivo),
+  identificación, datos fiscales/comerciales/contacto, fechas de Perseo,
+  sincronizadoEn, totalInstalaciones, estadoCambiadoEn y motivoCambioEstado.
+  El ID interno de la URL no es idPerseo. Inactivo sigue visible.
+  404 CLIENT_NOT_FOUND: inexistente, baja lógica interna o fuera de alcance.

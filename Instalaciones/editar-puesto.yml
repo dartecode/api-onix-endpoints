@@ -1,0 +1,27 @@
+info:
+  name: editar-puesto
+  type: http
+  seq: 10
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/puestos/1"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Entrada principal actualizada",
+        "descripcion": "Acceso peatonal y control de visitantes",
+        "contratado": true
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID del puesto (no por el ID de la instalación).
+  Requiere instalacion.editar. Campos opcionales: nombre, descripcion y contratado;
+  enviar al menos uno. descripcion=null limpia la descripción. No cambia idInstalacion.
+  200: puesto actualizado; 400 VALIDATION_ERROR; 404 POST_NOT_FOUND; 409 DUPLICATE_RECORD.
+  Audita PUESTO_ACTUALIZADO con motivo=null y puesto_nombre en anterior/nuevo.

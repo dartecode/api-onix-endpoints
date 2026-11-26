@@ -1,0 +1,20 @@
+info:
+  name: historial-instalacion
+  type: http
+  seq: 8
+http:
+  method: GET
+  url: "{{URL}}/api/v1/instalaciones/1/historial?pagina=1&limite=20"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Requiere instalacion.ver.
+  200: historial en data, del más reciente al más antiguo; paginación en meta.
+  Cada entrada incluye id, idUsuario, usuario { id, nombre } o null, accion, fecha,
+  motivo, anterior y nuevo. Las fotos conservan claves snake_case.
+  Crear, editar y cambiar el estado de un puesto genera PUESTO_CREADO, PUESTO_ACTUALIZADO
+  y PUESTO_ESTADO: las entradas nuevas tienen motivo=null y nuevo.puesto_nombre.
+  En actualizaciones, anterior.puesto_nombre conserva el nombre previo.
+  Los registros históricos no se reescriben. INSTALACION_ESTADO sí registra el motivo enviado.
+  403 FORBIDDEN: sin permiso; 404 INSTALLATION_NOT_FOUND: inexistente/fuera de alcance.

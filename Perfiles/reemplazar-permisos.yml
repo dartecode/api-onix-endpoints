@@ -14,11 +14,25 @@ http:
   body:
     type: json
     data: |-
-      { "permisos": ["cliente.ver", "usuario.ver"] }
+      {
+        "permisos": [
+          "cliente.ver",
+          "camara.ver",
+          "incidente.ver",
+          "dispositivo.ver",
+          "reporte.crear"
+        ]
+      }
 docs: |-
   Requiere perfil.editar. Reemplaza la lista completa, no agrega permisos.
   Modificar el ejemplo según la matriz deseada antes de enviarlo.
+  El ejemplo muestra la matriz inicial del Operador sin instalacion.ver; consultar listar-perfiles
+  y conservar sus demás permisos actuales si solo se quiere retirar ese permiso.
+  Para bases existentes retirar instalacion.ver de operador, gerencia, dpd, clienteAdministrador,
+  clienteResponsableInstalacion y clienteConsulta, enviando para cada perfil su lista completa.
+  Cambiar el catálogo o repetir la semilla no elimina permisos ya concedidos.
   200: data es el perfil actualizado. Si hay cambios cierra sus sesiones.
   400 VALIDATION_ERROR: formato/repetidos; PERMISO_INVALIDO: details con códigos desconocidos.
-  403 FORBIDDEN: sin permiso o intento de quitar perfil.editar al administrador.
+  403 FORBIDDEN: sin permiso o intento de quitar cualquier permiso del catálogo al superadmin.
+  El administrador tiene una matriz editable; no tiene permisos protegidos.
   404 PERFIL_INVALIDO: perfil inexistente.

@@ -1,0 +1,29 @@
+info:
+  name: registrar-ubicacion
+  type: http
+  seq: 6
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/instalaciones/1/ubicacion"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "latitud": -0.180653,
+        "longitud": -78.467834,
+        "fuente": "mapa"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Requiere instalacion.ubicar.
+  latitud: -90 a 90; longitud: -180 a 180; fuente: mapa/gps.
+  precisionMetros es opcional y debe ser >= 0.
+  fuente=mapa guarda precisionUbicacion=aproximada, incluso con permiso de verificación.
+  fuente=gps y permiso instalacion.verificarUbicacion guarda verificada directamente;
+  sin ese permiso queda aproximada. 200: instalación con actor y fechas de ubicación.
+  400 VALIDATION_ERROR; 404 INSTALLATION_NOT_FOUND.

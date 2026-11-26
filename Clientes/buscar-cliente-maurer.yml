@@ -1,0 +1,20 @@
+info:
+  name: buscar-cliente-maurer
+  type: http
+  seq: 4
+http:
+  method: GET
+  url: "{{URL}}/api/v1/clientes?busqueda=MAURER&pagina=1&limite=20"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere cliente.ver. Ejecutar después de sincronizar-clientes contra Perseo real.
+  En data, localizar MAURER y comprobar razonSocial=MAURER BOLAÑOS JURGEN SAMMY cuando el origen
+  entregue el nombre correcto. No asumir idPerseo=62: en el servidor verificado el 26/11/2026
+  tiene idPerseo=72 e ID interno 58; el proveedor ya devuelve MAURER BOLAÃ?OS JURGEN SAMMY.
+  Usar data[].id, no idPerseo, para fichas e instalaciones.
+  Si el nombre corregido cambió, la sincronización lo cuenta en actualizados; la siguiente,
+  sin cambios comerciales, en sinCambios. Comprobar también tildes de otros registros.
+  Si sigue deteriorado, revisar los bytes del proveedor: no se repara por apariencia texto
+  que ya llegue deteriorado dentro de un JSON UTF-8 válido.

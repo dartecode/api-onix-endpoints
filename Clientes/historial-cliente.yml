@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{URL}}/api/v1/clientes/4/historial?pagina=1&limite=20"
+  url: "{{URL}}/api/v1/clientes/1/historial?pagina=1&limite=20"
   params:
     - name: pagina
       value: "1"
@@ -27,5 +27,9 @@ settings:
 docs: |-
   Reemplazar 1 en la URL por el identificador numérico del cliente.
   cliente.ver. Historial paginado de altas y ediciones exitosas, más
-  recientes primero. Cada item: id, idUsuario, accion, fecha, motivo,
-  anterior y nuevo. 200; 404: inexistente o fuera de alcance.
+  recientes primero. Cada item: id, idUsuario, usuario { id, nombre } o null,
+  accion, fecha, motivo, anterior y nuevo. No requiere usuario.ver.
+  Fotos en snake_case: conservar las claves originales. Cambios comerciales vienen de Perseo;
+  las fotos nuevas incluyen campos del origen e id_sincronizacion. Repetir sin cambios
+  no añade una edición; los resúmenes de sincronización no se mezclan en este historial.
+  200; 404 CLIENT_NOT_FOUND: inexistente o fuera de alcance.

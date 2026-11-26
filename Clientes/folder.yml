@@ -5,8 +5,11 @@ info:
 
 docs:
   content: |-
-    Administración de clientes. El ID en la URL es numérico. Permisos cliente.ver,
-    cliente.crear o cliente.editar según operación; alcance validado en la base.
-    Identificación de 10 o 13 dígitos, inmutable después del alta. Estado con motivo
-    obligatorio. Detalle y casos: APIOnix/docs/funcionalidad/CLIENTES.md.
+    Catálogo sincronizado manualmente desde Perseo. El ID en la URL es numérico e interno,
+    distinto de idPerseo. No hay alta/edición comercial local: usar sincronizar-clientes.
+    Consulta con cliente.ver; sincronización con cliente.sincronizar y perfil interno;
+    correos locales con cliente.gestionarCorreos. El API aplica permisos y alcance con Prisma.
+    Estados: activo/inactivo; ambos visibles. Ausentes del proveedor: enPerseo=false, sin borrado.
+    Datos y estado se corrigen en Perseo. La semilla no crea clientes de prueba.
+    Detalle y casos: APIOnix/docs/funcionalidad/CLIENTES.md.
   type: text/markdown

@@ -10,4 +10,4 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   cliente.ver. Contadores de todo el alcance, sin filtros de página:
-  data con total, activos, suspendidos y bajas. 200.
+  data con total, activos, inactivos y ausentesEnPerseo. 200.

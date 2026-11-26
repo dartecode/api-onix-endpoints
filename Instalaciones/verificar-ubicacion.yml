@@ -1,0 +1,15 @@
+info:
+  name: verificar-ubicacion
+  type: http
+  seq: 7
+http:
+  method: POST
+  url: "{{URL}}/api/v1/instalaciones/1/ubicacion/verificar"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Sin cuerpo.
+  Requiere instalacion.verificarUbicacion y coordenadas previamente registradas.
+  200 (no 201): precisionUbicacion=verificada, ubicacionVerificadaPor y ubicacionVerificadaEn.
+  422 LOCATION_MISSING: no tiene coordenadas; 404 INSTALLATION_NOT_FOUND.

@@ -1,0 +1,30 @@
+info:
+  name: sincronizar-clientes
+  type: http
+  seq: 3
+http:
+  method: POST
+  url: "{{URL}}/api/v1/clientes/sincronizar"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+settings:
+  timeout: 0
+docs: |-
+  Sin cuerpo. Requiere cliente.sincronizar y perfil de tipo interno.
+  Sustituye el alta/edición local: datos comerciales y estado activo/inactivo se corrigen en Perseo.
+  Configurar PERSEO_SERVER y PERSEO_API_KEY únicamente en el entorno del backend correspondiente
+  (en desarrollo Docker: .env.docker de APIOnix y recrear api). No poner la clave en Bruno.
+  200: data con idSincronizacion, iniciadoEn, finalizadoEn, total, creados, actualizados,
+  sinCambios, excluidos, ausentesEnPerseo y errores [{ indice, idPerseo, code, mensaje }].
+  total incluye todos los recibidos. Consumidor final (tipo F o identificación genérica de
+  10/13 nueves) se omite antes de validar/importar y cuenta en excluidos, no en errores.
+  El ID del registro no se usa para decidir la exclusión.
+  indice empieza en 1. Revisar errores aunque el HTTP sea 200; cada registro se procesa por separado.
+  403 CLIENTE_ACCESO_DENEGADO: perfil cliente incluso con permiso; sin permiso: 403 FORBIDDEN.
+  409 CLIENT_SYNC_IN_PROGRESS/CLIENT_SYNC_LOCK_LOST: bloqueo de sincronización.
+  503 PERSEO_NOT_CONFIGURED/PERSEO_UNAVAILABLE/PERSEO_INVALID_RESPONSE: configuración o proveedor.
+  Los clientes ausentes se marcan enPerseo=false; no se eliminan ni pierden sus relaciones.
+  Repetir sin cambios no duplica clientes ni añade ediciones de negocio al historial.
+  Codificación: el backend respeta charset y recupera bytes UTF-8 inválidos como Windows-1252.
+  Tras sincronizar, ejecutar buscar-cliente-maurer para comprobar Ñ/tildes; no asumir un ID externo.

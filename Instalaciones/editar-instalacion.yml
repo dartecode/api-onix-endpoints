@@ -1,0 +1,29 @@
+info:
+  name: editar-instalacion
+  type: http
+  seq: 4
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/instalaciones/1"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "horaApertura": "00:00",
+        "horaCierre": "00:00"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Requiere instalacion.editar.
+  El ejemplo activa atención de 24 horas. También admite 18:00 a 08:00 (día siguiente).
+  Campos opcionales: nombre, direccion, ciudad, provincia, referencia, zonaHoraria,
+  horaApertura, horaCierre, tieneCarteles y fechaVerificacionCarteles. No cambia idCliente.
+  El horario se valida combinando lo enviado con lo guardado; omitir una hora la conserva.
+  Para quitar el horario, enviar ambas horas null. Solo una informada o ambas 09:00:
+  400 INVALID_SCHEDULE. Cuerpo vacío o formato de hora inválido: 400 VALIDATION_ERROR.
+  200: instalación actualizada en data; 404 INSTALLATION_NOT_FOUND; 409 DUPLICATE_RECORD.

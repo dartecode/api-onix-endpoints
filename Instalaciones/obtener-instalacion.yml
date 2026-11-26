@@ -1,0 +1,15 @@
+info:
+  name: obtener-instalacion
+  type: http
+  seq: 2
+http:
+  method: GET
+  url: "{{URL}}/api/v1/instalaciones/1"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID numérico de la instalación. Requiere instalacion.ver.
+  200: InstallationDto en data, con cliente, horario, ubicación, totalPuestos,
+  totalDispositivos y puestos (cada uno con estado y totalDispositivos).
+  403 FORBIDDEN: sin permiso; 404 INSTALLATION_NOT_FOUND: inexistente o fuera de alcance.
