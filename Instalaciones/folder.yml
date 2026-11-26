@@ -1,0 +1,20 @@
+info:
+  name: Instalaciones y puestos
+  type: folder
+  seq: 7
+docs:
+  content: |-
+    Las instalaciones pertenecen a un cliente; los puestos, a una instalación.
+    Reemplazar los IDs numéricos de ejemplo por data.id de las respuestas correspondientes.
+    Sesión completa con TOKEN. Consultar exige instalacion.ver; crear instalacion.crear;
+    editar, cambiar estado y gestionar puestos instalacion.editar; ubicación instalacion.ubicar;
+    verificar ubicación instalacion.verificarUbicacion.
+    La matriz inicial permite consultar a superadmin, administrador, supervisor, tecnico y
+    auditorInterno. Operador, gerencia, dpd y los tres perfiles de cliente no reciben ese permiso.
+    La autorización usa la matriz vigente; no se decide por el nombre del perfil ni por el menú.
+    Horario nocturno válido; 00:00 a 00:00 significa 24 horas. Otras horas iguales producen
+    400 INVALID_SCHEDULE. Las nuevas auditorías PUESTO_* tienen motivo null y puesto_nombre
+    en las fotos anterior/nuevo. No hay borrado físico desde estas rutas.
+    Casos manuales: README.md, sección Instalaciones y puestos.
+    Reglas completas: APIOnix/docs/funcionalidad/INSTALACIONES.md.
+  type: text/markdown

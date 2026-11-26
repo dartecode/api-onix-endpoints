@@ -8,7 +8,9 @@ request:
     token: "{{TOKEN}}"
 docs:
   content: |-
-    Aplicar primero BDOnix/migraciones/001_perfiles_permisos.sql.
+    Catálogos y matrices gestionados con Prisma; preparar migraciones y semilla de APIOnix.
     Consultar exige perfil.ver; reemplazar exige perfil.editar.
     Cada cambio real revoca las sesiones del perfil afectado, incluida la del actor.
+    superadmin conserva todo el catálogo protegido; administrador es un perfil independiente
+    con matriz editable. Consultar README.md para retirar instalacion.ver de matrices existentes.
   type: text/markdown

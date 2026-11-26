@@ -1,23 +1,33 @@
 # OnixApi — colección Bruno
 
 Abrir esta carpeta en Bruno como colección YAML/OpenCollection 1.0.0.
-Backend: `../APIOnix`; contrato PostgreSQL: `../BDOnix/docs/CONTRATO_API.md`.
-Swagger: http://localhost:3000/api/v1/docs; JSON: /api/v1/openapi.json.
+Backend: `../APIOnix`, NestJS y Prisma. El contrato HTTP vigente está en
+Swagger: http://localhost:3000/api/v1/docs; JSON: http://localhost:3000/api/v1/openapi.json.
+Reglas funcionales: [`APIOnix/docs/funcionalidad/`](../APIOnix/docs/funcionalidad/).
 
 ## Preparación
 
-1. Instalar/actualizar la base según `BDOnix/README.md`, usando `db/instalar.sql`.
-   Sobre una base existente aplicar en orden `BDOnix/migraciones/002_clientes.sql`
-   y `BDOnix/migraciones/003_historial_clientes_filtro_usuarios.sql` antes de
-   desplegar la API actualizada. Si la identificación por tipo ya está instalada,
-   aplicar únicamente la migración 003.
-   El script `scripts/20261117_login_bloqueo.sql` corresponde al contrato anterior:
-   no aplicarlo sobre el esquema actual de `db/`.
-2. Arrancar APIOnix con PostgreSQL real. Sin SMTP en desarrollo, las temporales y
-   códigos de correo aparecen en la consola del API; con SMTP se envían al correo.
+1. Preparar API y PostgreSQL locales en Docker según la
+   [guía del backend](../APIOnix/docs/operacion/GUIA-DESARROLLADORES.md).
+   `.env.docker` configura desarrollo local; el `.env` del backend conserva AWS/QA.
+   Aplicar migraciones y semilla mediante el servicio `tools`, no mediante scripts de la base histórica.
+2. Levantar el API y comprobar `/api/v1/health/ready`. Sin SMTP en desarrollo, las temporales y
+   códigos de correo aparecen en los logs del contenedor `api`; con SMTP se envían al correo.
 3. Seleccionar ONIX LOCAL. Conservar URL como origen, sin `/api/v1` ni barra final.
 4. Configurar las variables locales de la tabla. No guardar secretos en commits.
-5. Primer administrador: `APIOnix/docs/PRIMER-ADMIN.md` (`pnpm admin:hash`).
+5. Primer superadministrador: [PRIMER-ADMIN.md](../APIOnix/docs/operacion/PRIMER-ADMIN.md).
+   La semilla crea la cuenta solo si no hay otro activo; no restablece una contraseña existente.
+
+Comandos de actualización local, ejecutados desde `APIOnix/`:
+
+```bash
+docker compose --env-file .env.docker -f compose.yaml -f compose.local.yaml build api tools
+docker compose --env-file .env.docker -f compose.yaml -f compose.local.yaml run --rm tools pnpm db:deploy
+docker compose --env-file .env.docker -f compose.yaml -f compose.local.yaml run --rm tools pnpm db:seed
+docker compose --env-file .env.docker -f compose.yaml -f compose.local.yaml up -d --wait api
+```
+
+El API usa código compilado, sin recarga automática. Después de cambiarlo, reconstruir las imágenes.
 
 ## Variables locales
 
@@ -31,7 +41,9 @@ Swagger: http://localhost:3000/api/v1/docs; JSON: /api/v1/openapi.json.
 El script de login conserva las credenciales existentes del request, captura
 data.tokenAcceso y limpia TOKEN cuando no hay tokens. Leer el siguiente paso en data.paso.
 Escribir contraseñas y códigos directamente en el cuerpo de cada petición.
-Reemplazar los IDs de ejemplo en las URLs: UUID para usuarios y número para clientes.
+Reemplazar los IDs de ejemplo en las URLs: UUID para usuarios; números para clientes,
+instalaciones, puestos y correos. El ID interno de un cliente no es su `idPerseo`.
+Las peticiones nuevas usan `1` como ejemplo; copiar el `data.id` real antes de ejecutarlas.
 Las peticiones administrativas usan TOKEN: iniciar sesión con el actor autorizado.
 Si se alternan cuentas, copiar el token del actor directamente en el Bearer de la
 petición que deba conservarlo, antes de iniciar sesión con la otra cuenta.
@@ -75,16 +87,101 @@ Una sola sesión activa por cuenta: un login que emite sesión sustituye la ante
 
 ## Cobertura
 
-- Autenticacion: login, me, renovación, cierre, dos cambios de contraseña y seis
-  operaciones de MFA.
+- Autenticacion/MFA: login, me, edición propia, renovación, cierre, cambios de contraseña,
+  configuración correo/TOTP, verificación, confirmación, estado y desactivación MFA.
 - Usuarios: alta, listado general o filtrado por cliente, consulta, edición,
   estado, desbloqueo, restablecimiento y consulta/reinicio MFA.
-- Clientes: alta, listado con sector, consulta, edición con motivo de estado,
-  resumen e historial.
+- Clientes: listado y filtros, ficha, resumen, historial, sincronización manual desde Perseo,
+  comprobación de codificación de MAURER y gestión de correos locales.
+- Perfiles: catálogo, permisos y reemplazo de matriz.
+- Instalaciones: las 11 rutas de instalaciones y puestos, incluidos horario, estado,
+  ubicación desde mapa/GPS, verificación e historial.
 - Salud: live y ready.
 
-Los permisos administrativos se comprueban en cada petición y dentro de los SP.
-Los perfiles de cliente tienen alcance limitado a su cliente.
+Los permisos se leen de la base en cada petición. Los servicios y políticas del API aplican
+las reglas y el alcance; Prisma realiza el acceso a datos. Los perfiles de cliente tienen
+alcance limitado a su cliente, siempre que su matriz les conceda el permiso de la operación.
+
+## Clientes y Perseo
+
+Perseo administra los datos comerciales y el estado `activo`/`inactivo`. Se retiraron de la
+colección `crear-cliente` y `editar-cliente`: el API ya no ofrece esas rutas.
+
+1. Configurar `PERSEO_SERVER` y `PERSEO_API_KEY` en el backend local (`.env.docker`) y recrear
+   el servicio `api`. La clave del proveedor no se envía desde Bruno.
+2. Con una sesión interna con `cliente.sincronizar`, ejecutar `sincronizar-clientes` sin cuerpo.
+   HTTP 200 puede contener incidencias en `data.errores`: revisar también ese arreglo y los contadores.
+3. Consultar `listar-clientes`: admite `busqueda`, `estado`, `sector` y `enPerseo` además de paginación.
+   Los inactivos siguen visibles y los ausentes del proveedor quedan `enPerseo=false`, sin borrarse.
+4. Ejecutar `buscar-cliente-maurer`: se espera `MAURER BOLAÑOS JURGEN SAMMY` cuando el origen
+   entregue el nombre correcto. No asumir un ID entre ambientes: en el servidor verificado el
+   26/11/2026 tiene `idPerseo=72`, no 62, y ya llega deteriorado desde Perseo.
+   El backend respeta el charset y recupera bytes UTF-8 inválidos
+   como Windows-1252; no recodifica texto UTF-8 válido solo por contener `Ã`.
+5. Repetir la sincronización: sin cambios comerciales cuenta en `sinCambios`; una corrección de
+   nombre cuenta en `actualizados` y conserva el ID interno y las relaciones.
+
+Los consumidores finales (tipo `F` o identificación genérica de 10/13 nueves) se excluyen antes
+de importar. `total` incluye todos los recibidos y `excluidos` cuenta estas omisiones, sin errores.
+Los registros 1 y 71 del servidor verificado corresponden a esos consumidores finales;
+la regla no depende de sus IDs. Los demás datos inválidos se corrigen en Perseo.
+Sin configuración: `503 PERSEO_NOT_CONFIGURED`; conflicto de sincronización: `409`.
+No hay clientes de prueba en la semilla; para crear una instalación se necesita un cliente activo.
+
+## Instalaciones y puestos
+
+Abrir la carpeta **Instalaciones y puestos** y usar una sesión completa con los permisos requeridos.
+La petición `crear-instalacion` lleva un ejemplo nocturno; `editar-instalacion`, uno de 24 horas.
+
+### Horarios
+
+Probar cada caso en creación (con nombre único y un cliente activo) y edición:
+
+| Apertura / cierre | POST | PATCH |
+| --- | --- | --- |
+| `18:00` / `08:00` | `201` | `200` |
+| `00:00` / `00:00` | `201` | `200` |
+| `09:00` / `09:00` | `400 INVALID_SCHEDULE` | `400 INVALID_SCHEDULE` |
+| Ambas `null` | `201` | `200` |
+| Una hora informada y la otra `null` | `400 INVALID_SCHEDULE` | `400 INVALID_SCHEDULE` |
+
+El cierre menor que la apertura termina al día siguiente. En PATCH se valida el estado combinado:
+omitir una hora conserva la guardada; para quitar el horario existente enviar ambas como `null`.
+Un formato como `25:00` responde `400 VALIDATION_ERROR`, no `INVALID_SCHEDULE`.
+
+### Permisos y matrices existentes
+
+`instalacion.ver` se asigna inicialmente a `superadmin`, `administrador`, `supervisor`, `tecnico`
+y `auditorInterno`. No se asigna a `operador`, `gerencia`, `dpd`, `clienteAdministrador`,
+`clienteResponsableInstalacion` ni `clienteConsulta`. La autorización depende de la matriz vigente.
+
+Para una base ya creada, la semilla no retira el permiso concedido anteriormente:
+
+1. Ejecutar `Perfiles/listar` con un actor con `perfil.ver` y `perfil.editar`.
+2. En cada uno de los seis perfiles afectados, copiar la lista actual, retirar solo
+   `instalacion.ver` y enviarla en `Perfiles/reemplazar-permisos`, cambiando el código en la URL.
+   El PUT reemplaza **toda** la matriz: conservar los demás permisos.
+3. Los cambios reales se auditan y revocan las sesiones del perfil. Volver a iniciar sesión.
+4. Con Operador: listado, ficha e historial → `403 FORBIDDEN`. Con Auditor interno con permiso:
+   listado → `200`. Volver a la cuenta autorizada para continuar los cambios.
+
+### Puestos, historial y ubicación
+
+1. Crear un puesto, editar su nombre y cambiar su estado; usar el ID del puesto en `/puestos/:id`.
+2. Consultar `historial-instalacion` usando el ID de la instalación padre. Las entradas nuevas
+   `PUESTO_CREADO`, `PUESTO_ACTUALIZADO` y `PUESTO_ESTADO` deben tener `motivo: null` y
+   `nuevo.puesto_nombre`; las actualizaciones conservan el nombre anterior en `anterior`.
+3. Cambiar el estado de la instalación con motivo: su entrada `INSTALACION_ESTADO` sí lo conserva.
+   El estado de un puesto solo recibe `estado`, no `motivo`. Los históricos no se reescriben.
+4. Registrar coordenadas con `fuente: "mapa"`: precisión `aproximada`. Con `fuente: "gps"` y
+   `instalacion.verificarUbicacion`: `verificada`. Registrar requiere `instalacion.ubicar`.
+5. Sin coordenadas, verificar devuelve `422 LOCATION_MISSING`. Con coordenadas y permiso,
+   `verificar-ubicacion` devuelve `200` y registra actor/fecha de verificación.
+
+Reglas y contrato: [INSTALACIONES.md](../APIOnix/docs/funcionalidad/INSTALACIONES.md) y OpenAPI.
+Esta guía describe la aceptación manual; no acredita su ejecución contra un ambiente concreto.
+Resultados del entorno Docker local del 26/11/2026, incluidas exclusiones y el problema de nombre
+en el origen: [evidencia del backend](../APIOnix/docs/integracion/VERIFICACION-LOCAL-20261126.md).
 
 ## Respuestas y comprobación manual
 
@@ -92,7 +189,7 @@ Los perfiles de cliente tienen alcance limitado a su cliente.
 Error: `{ success: false, statusCode, code, message, details?, path, timestamp }`.
 Leer datos dentro de data. 400 validación; 401 credenciales/sesión; 403 permisos o
 sesión restringida; 404 inexistente/fuera de alcance; 409 duplicado/conflicto;
-422 regla del SP; 501 SP ausente; 503 base/correo no disponible.
+422 regla de negocio; 503 base/correo/proveedor no disponible.
 
 1. Completar login inicial y MFA; comprobar me con sesión completa.
 2. Cambiar clave desde el perfil: clave actual incorrecta → 401; confirmación
@@ -105,5 +202,5 @@ sesión restringida; 404 inexistente/fuera de alcance; 409 duplicado/conflicto;
 
 Si correo devuelve MAIL_UNAVAILABLE, el cambio puede estar guardado: repetir el
 restablecimiento genera otra temporal. No repetir el alta ciegamente.
-Detalle: `APIOnix/docs/CONTRASENAS.md`. Esta colección sigue el backend actual;
-no documenta rate limiting ni desbloqueo con justificación del contrato anterior.
+Detalle: [AUTENTICACION.md](../APIOnix/docs/funcionalidad/AUTENTICACION.md) y
+[USUARIOS.md](../APIOnix/docs/funcionalidad/USUARIOS.md).

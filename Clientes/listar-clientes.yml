@@ -9,5 +9,8 @@ http:
     type: bearer
     token: "{{TOKEN}}"
 docs: |-
-  cliente.ver. Filtros opcionales busqueda, estado (activo/suspendido/baja)
-  y sector (coincidencia exacta). 200: clientes en data, paginación en meta.
+  cliente.ver. Filtros opcionales: busqueda (razón social/nombre comercial/identificación),
+  estado (activo/inactivo), sector (coincidencia exacta) y enPerseo (true/false).
+  200: clientes en data, paginación en meta. pagina desde 1 y limite hasta 100.
+  Cada cliente incluye id interno, idPerseo, enPerseo, datos fiscales/comerciales,
+  sincronizadoEn y totalInstalaciones. El estado inactivo no oculta el cliente.

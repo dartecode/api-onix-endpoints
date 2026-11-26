@@ -1,0 +1,27 @@
+info:
+  name: crear-puesto
+  type: http
+  seq: 9
+http:
+  method: POST
+  url: "{{URL}}/api/v1/instalaciones/1/puestos"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Entrada principal",
+        "descripcion": "Acceso peatonal",
+        "contratado": true
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Requiere instalacion.editar.
+  nombre obligatorio, máximo 100; descripcion opcional/null, máximo 300;
+  contratado obligatorio (booleano). 201: puesto en data; guardar data.id para editarlo.
+  409 DUPLICATE_RECORD: nombre repetido en la instalación; 404 INSTALLATION_NOT_FOUND.
+  Audita PUESTO_CREADO con motivo=null y nuevo.puesto_nombre.

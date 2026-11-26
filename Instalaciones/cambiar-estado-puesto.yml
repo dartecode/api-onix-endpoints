@@ -1,0 +1,25 @@
+info:
+  name: cambiar-estado-puesto
+  type: http
+  seq: 11
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/puestos/1/estado"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "estado": "inactivo"
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID del puesto. Requiere instalacion.editar.
+  estado: activo/inactivo. No enviar motivo: este DTO solo admite estado.
+  200: puesto actualizado; 400 VALIDATION_ERROR; 404 POST_NOT_FOUND.
+  Audita PUESTO_ESTADO con motivo=null y nuevo.puesto_nombre.
+  Consultar el resultado en historial-instalacion usando el ID de la instalación padre.

@@ -1,0 +1,26 @@
+info:
+  name: cambiar-estado-instalacion
+  type: http
+  seq: 5
+http:
+  method: PATCH
+  url: "{{URL}}/api/v1/instalaciones/1/estado"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "estado": "inactivo",
+        "motivo": "Local cerrado por remodelación."
+      }
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Reemplazar 1 por el ID de la instalación. Requiere instalacion.editar.
+  estado: activo/inactivo. motivo obligatorio, no vacío, máximo 500 caracteres.
+  200: instalación actualizada; 400 VALIDATION_ERROR: estado/motivo inválido;
+  404 INSTALLATION_NOT_FOUND: inexistente o fuera de alcance.
+  La auditoría INSTALACION_ESTADO sí conserva este motivo. No borra la instalación.
