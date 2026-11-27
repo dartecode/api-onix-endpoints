@@ -47,6 +47,9 @@ Las peticiones nuevas usan `1` como ejemplo; copiar el `data.id` real antes de e
 Los ejemplos de Catálogos usan provincia `17`, cantón `1701` y parroquia `170151` solo como
 referencia; obtener los IDs vigentes desde las consultas geográficas de cada ambiente.
 Las peticiones administrativas usan TOKEN: iniciar sesión con el actor autorizado.
+En Auditoría, ajustar `desde` y, si se necesita, `hasta` a la fecha del ambiente; los ejemplos
+usan noviembre de 2026. El ID de auditoría es numérico; `idRecurso` identifica la entidad
+afectada y puede ser UUID o texto numérico, según `recurso`.
 Si se alternan cuentas, copiar el token del actor directamente en el Bearer de la
 petición que deba conservarlo, antes de iniciar sesión con la otra cuenta.
 No hay tests ni aserciones automáticas, solo scripts para capturar credenciales.
@@ -101,6 +104,8 @@ Una sola sesión activa por cuenta: un login que emite sesión sustituye la ante
 - Instalaciones: las 11 rutas de instalaciones y puestos, con selección geográfica por IDs,
   horario, estado, ubicación desde mapa/GPS, verificación e historial.
 - Salud: live y ready.
+- Auditoría: las seis rutas de consulta, detalle, resumen, acciones, clave pública y exportación
+  ZIP firmada; filtros opcionales disponibles y desactivados en Params del listado.
 
 Los permisos se leen de la base en cada petición. Los servicios y políticas del API aplican
 las reglas y el alcance; Prisma realiza el acceso a datos. Los perfiles de cliente tienen
@@ -261,8 +266,9 @@ Al igual que con `instalacion.ver`, en bases ya creadas `pnpm db:seed` elimina `
 transacción. No hace falta enviar el PUT para retirarlo; si se vuelve a conceder con
 `Perfiles/reemplazar-permisos`, la siguiente semilla lo quitará otra vez.
 
-1. Ejecutar `Perfiles/listar` con `perfil.ver`: gerencia y DPD deben quedar solo con
-   `cliente.ver`; supervisor, auditor interno y cliente administrador conservan `usuario.ver`.
+1. Ejecutar `Perfiles/listar` con `perfil.ver`: Gerencia y DPD no deben incluir `usuario.ver`;
+   conservan sus demás permisos, incluidos los de auditoría que se describen abajo.
+   Supervisor, Auditor interno y Cliente administrador conservan `usuario.ver`.
 2. Si el ambiente no tiene cuentas con esos perfiles, crearlas con `Usuarios/crear-usuario`
    (la de cliente administrador necesita un `idCliente` activo) e iniciar sesión con
    `Autenticacion/iniciar-sesion`, completando cambio inicial y MFA cuando aparezcan.
@@ -291,11 +297,122 @@ Esta guía describe la aceptación manual; no acredita su ejecución contra un a
 Resultados del entorno Docker local del 26/11/2026, incluidas exclusiones y el problema de nombre
 en el origen: [evidencia del backend](../APIOnix/docs/integracion/VERIFICACION-LOCAL-20261126.md).
 
+## Auditoría
+
+Abrir **Auditoría** y usar una sesión completa del actor. Aplicar primero las migraciones y
+la semilla del backend; si cambiaron permisos, iniciar sesión nuevamente porque la semilla
+revoca las sesiones afectadas.
+
+### Permisos de consulta y exportación
+
+`auditoria.ver` habilita la consulta; uno o más permisos de alcance limitan los registros y
+se suman. `auditoria.exportar` se exige además de `auditoria.ver` al exportar.
+
+| Perfil inicial | Permiso de alcance | Visibilidad |
+| --- | --- | --- |
+| Superadministrador | Todos los permisos del catálogo | Toda la bitácora |
+| Auditor interno y Gerencia | `auditoria.verTodo` | Toda la bitácora |
+| Administrador | `auditoria.verConfiguracion` | Cambios de configuración |
+| DPD | `auditoria.verDatosPersonales` | Datos personales, autenticación y sesiones |
+
+Los cinco perfiles reciben `auditoria.ver` y `auditoria.exportar`. Operador, Técnico,
+Supervisor y perfiles cliente no los reciben inicialmente. La matriz sigue siendo editable;
+la autorización no depende del nombre del perfil. Con `auditoria.ver` pero sin alcance, la
+lista y el catálogo están vacíos; el resumen devuelve cero registros y `sin_verificar`.
+Sin el permiso de la operación: 403 `FORBIDDEN`, registrado como `PERMISO_DENEGADO`.
+
+### Peticiones y filtros
+
+| Petición de Bruno | Método y ruta después de `/api/v1` | Resultado |
+| --- | --- | --- |
+| `listar-auditoria` | `GET /auditoria` | `data` paginada y `meta`; sin fotos antes/después |
+| `obtener-auditoria` | `GET /auditoria/:id` | Detalle con `valorAnterior` y `valorNuevo` |
+| `resumen-auditoria` | `GET /auditoria/resumen` | Contadores e integridad del intervalo |
+| `acciones-auditoria` | `GET /auditoria/acciones` | Arreglo de `{ codigo, nombre, grupos }` |
+| `clave-publica-auditoria` | `GET /auditoria/clave-publica` | `{ algoritmo: "Ed25519", clavePublica: "...PEM..." }` |
+| `exportar-auditoria` | `POST /auditoria/exportar` | ZIP binario firmado o error JSON |
+
+Lista, resumen y exportación requieren `desde` ISO 8601; `hasta` es opcional y toma la hora
+actual si se omite. Extremos inclusivos, intervalo máximo 366 días. Adaptar las fechas de
+ejemplo: un `desde` antiguo puede superar el máximo aunque se omita `hasta`.
+
+En **Params** de `listar-auditoria`, los filtros opcionales están desactivados. Habilitar
+solo los necesarios y reemplazar los IDs de ejemplo:
+
+- `idUsuario`: UUID del actor que realizó la acción.
+- `accion`: un código o varios separados por coma, por ejemplo
+  `USUARIO_ACTUALIZADO,USUARIO_CREADO`; obtenerlos con `acciones-auditoria`.
+- `grupo`: `configuracion`, `datos_personales`, `sesiones` o `seguridad`. Una acción puede
+  pertenecer a varios grupos, pero el filtro recibe un solo grupo.
+- `recurso` e `idRecurso`: combinar ambos para el historial de una entidad, por ejemplo
+  `recurso=usuarios` y el UUID del usuario afectado en `idRecurso`.
+- `idCliente`: ID interno positivo del cliente, no `idPerseo`.
+- `resultado`: `exito`, `denegado` o `error`.
+- `pagina` desde 1 y `limite` hasta 100; valores iniciales 1 y 20.
+
+`resumen-auditoria` solo admite `desde` y `hasta`, sin los filtros adicionales del listado.
+El detalle y los catálogos no necesitan fechas. Copiar el `data.id` numérico de una entrada
+al detalle; no usar su `idRecurso`. Fuera de alcance: 404 `AUDIT_NOT_FOUND` auditado.
+Las fotos históricas conservan snake_case, sin contraseñas, secretos MFA ni tokens.
+El perfil es el del momento del registro; en históricos anteriores puede ser null.
+
+### ZIP y verificación de firma
+
+`exportar-auditoria` envía `{ filtros, motivo }`. El cuerpo inicial solo filtra por `desde`;
+se pueden añadir los filtros anteriores salvo `pagina` y `limite`. El motivo se recorta y
+debe tener de 10 a 500 caracteres.
+
+1. Configurar `AUDIT_SIGNING_PRIVATE_KEY_BASE64` únicamente en el backend y recrear el API.
+   Instrucciones en [AUDITORIA.md](../APIOnix/docs/funcionalidad/AUDITORIA.md#configuración).
+   Bruno nunca recibe la clave privada. Si falta, clave pública y exportación responden
+   503 `AUDIT_SIGNING_UNAVAILABLE`; las consultas siguen disponibles.
+2. Ejecutar `clave-publica-auditoria` y guardar **el valor** de `data.clavePublica` como
+   `auditoria-publica.pem`, con saltos de línea reales. No guardar el sobre JSON completo.
+3. Ejecutar `exportar-auditoria` con ambos permisos. Guardar/descargar la respuesta como
+   `auditoria.zip` y descomprimirla. El éxito es 200 `application/zip`, sin sobre ni `data`.
+4. Verificar la firma con las instrucciones de `LEEME.txt` antes de editar el CSV:
+
+   ```bash
+   base64 --decode auditoria.csv.sig > auditoria.sig
+   openssl pkeyutl -verify -pubin -inkey auditoria-publica.pem -rawin -in auditoria.csv -sigfile auditoria.sig
+   ```
+
+El ZIP contiene `auditoria.csv`, `auditoria.csv.sig` en base64 y `LEEME.txt`. El CSV incluye
+huella y huellaAnterior por fila; es UTF-8 con coma y CRLF. Los textos que podrían ejecutarse
+como fórmulas llevan un apóstrofo inicial. Conservar la clave pública al rotar claves.
+La exportación deja `AUDITORIA_EXPORTADA` con motivo, filtros y número de filas; el evento
+no se incluye en su propio archivo. Si falla la escritura de auditoría, no se entrega el ZIP.
+
+Más de 10 000 filas: 422 `AUDIT_EXPORT_TOO_LARGE` con `details: { total, limite: 10000 }`;
+acotar filtros y repetir. Los errores siguen siendo JSON. V1 no devuelve 202 ni envía correo.
+
+### Recorrido manual
+
+1. Con Auditor/Gerencia, consultar listado y catálogo; con Administrador, comprobar cambios
+   de usuarios y ausencia de sesiones de otros; con DPD, ver sesiones y probar que un detalle
+   de instalación conocido devuelve 404. Operador/Supervisor/cliente sin permiso: 403.
+2. Combinar acción, recurso e ID; comprobar paginación, ausencia de fotos en la lista y
+   antes/después en el detalle. Una acción ajena al catálogo da 400 `AUDIT_INVALID_ACTION`.
+3. Omitir `desde`, invertir las fechas, superar 366 días o pedir límite 101: 400.
+4. Consultar resumen: `accesosImagenes` es 0 hasta implementar video;
+   `descargasExportaciones` cuenta actualmente `AUDITORIA_EXPORTADA`. Los contadores respetan
+   el alcance. `cadena` verifica el intervalo físico completo y puede ser `integra`, `alterada`
+   o `sin_verificar`; por encima de `AUDIT_INTEGRITY_MAX_RECORDS` (10 000 por defecto) no se
+   verifica. No hay un proceso nocturno implementado. Un actor sin alcance recibe `sin_verificar`.
+5. Exportar con motivo, verificar el ZIP y consultar su evento. Si el ambiente tiene más de
+   10 000 filas visibles en el rango, comprobar el 422 con total y reducir el intervalo.
+
+Contrato, límites de la cadena y resultados reales del backend:
+[guía](../APIOnix/docs/funcionalidad/AUDITORIA.md) y
+[verificación local](../APIOnix/docs/integracion/VERIFICACION-AUDITORIA-20261127.md).
+Este recorrido no acredita aceptación desde la interfaz de Bruno ni desde el frontend.
+
 ## Respuestas y comprobación manual
 
 Éxito: `{ success: true, statusCode, data, meta?, path, timestamp }`.
 Error: `{ success: false, statusCode, code, message, details?, path, timestamp }`.
-Leer datos dentro de data. 400 validación; 401 credenciales/sesión; 403 permisos o
+Leer datos JSON dentro de data. Exportar auditoría con éxito devuelve un ZIP binario, sin
+sobre JSON; sus errores sí usan el sobre anterior. 400 validación; 401 credenciales/sesión; 403 permisos o
 sesión restringida; 404 inexistente/fuera de alcance; 409 duplicado/conflicto;
 422 regla de negocio; 503 base/correo/proveedor no disponible.
 

@@ -15,3 +15,6 @@ docs: |-
   La autorización depende de la matriz editable; el catálogo de permisos no representa la
   asignación de cada perfil. Consultar listar-perfiles para comprobar las matrices.
   La sincronización de clientes usa cliente.sincronizar.
+  El módulo Auditoría añade auditoria.ver, auditoria.exportar, auditoria.verTodo,
+  auditoria.verConfiguracion y auditoria.verDatosPersonales. Consultar listar-perfiles
+  para ver asignaciones y README.md, sección Auditoría, para alcance y exportación.

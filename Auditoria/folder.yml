@@ -1,0 +1,30 @@
+info:
+  name: Auditoría
+  type: folder
+  seq: 9
+docs:
+  content: |-
+    Bitácora de acciones sensibles: seis rutas con sesión completa y auditoria.ver.
+    TOKEN corresponde al actor que consulta. Los permisos se leen de la matriz vigente.
+    Los alcances se suman: auditoria.verTodo, auditoria.verConfiguracion y
+    auditoria.verDatosPersonales. Con auditoria.ver sin alcance: lista vacía, no 403.
+    Inicialmente Superadministrador, Auditor interno y Gerencia ven todo; Administrador,
+    configuración; DPD, datos personales, incluida autenticación y sesiones.
+    Operador, Técnico, Supervisor y clientes no reciben auditoria.ver inicialmente.
+    Cada acción puede pertenecer a varios grupos; el catálogo devuelve grupos como arreglo.
+    Lista, resumen y exportación requieren desde ISO 8601; hasta es opcional (ahora).
+    Intervalo máximo 366 días, extremos inclusivos. Ajustar las fechas de ejemplo al ambiente.
+    La lista tiene filtros opcionales desactivados en Params: habilitar solo los necesarios.
+    Para historial de una entidad combinar recurso e idRecurso. Copiar un data.id real
+    del listado al detalle; idRecurso es el ID de la entidad afectada, no el ID de auditoría.
+    Exportar requiere también auditoria.exportar y motivo de 10 a 500 caracteres.
+    Hasta 10000 filas: ZIP binario firmado, sin sobre JSON. Más filas: 422
+    AUDIT_EXPORT_TOO_LARGE con details.total y details.limite; acotar filtros.
+    No hay 202 ni envío por correo en V1. Errores de exportación: JSON habitual.
+    Firma y clave pública requieren AUDIT_SIGNING_PRIVATE_KEY_BASE64 solo en el backend;
+    sin configuración responden 503 AUDIT_SIGNING_UNAVAILABLE. Nunca enviar la clave privada.
+    Guardar el ZIP y seguir LEEME.txt para verificar auditoria.csv con la clave pública PEM.
+    La exportación registra AUDITORIA_EXPORTADA con motivo, filtros y número de filas.
+    Ver README.md, sección Auditoría, para permisos, respuestas y recorrido manual.
+    Reglas: APIOnix/docs/funcionalidad/AUDITORIA.md; contrato: /api/v1/openapi.json.
+  type: text/markdown

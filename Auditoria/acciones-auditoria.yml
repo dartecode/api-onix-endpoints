@@ -1,0 +1,20 @@
+info:
+  name: acciones-auditoria
+  type: http
+  seq: 4
+http:
+  method: GET
+  url: "{{URL}}/api/v1/auditoria/acciones"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere auditoria.ver. No recibe fechas ni paginación.
+  200: data es un arreglo de {codigo, nombre, grupos}, filtrado por el alcance del actor.
+  nombre está en español; grupos es un arreglo, no el campo singular grupo.
+  Ejemplo: {"codigo":"USUARIO_ACTUALIZADO","nombre":"Modificación de usuario",
+  "grupos":["configuracion","datos_personales"]}.
+  Copiar codigo al filtro accion de listar-auditoria o exportar-auditoria.
+  Un código puede pertenecer a varios grupos; el filtro de petición sigue siendo grupo singular.
+  DPD incluye autenticación/sesiones; Administrador solo configuración.
+  Sin permisos de alcance: data vacía. Sin auditoria.ver: 403 FORBIDDEN auditado.

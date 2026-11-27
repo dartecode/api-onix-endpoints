@@ -1,0 +1,48 @@
+info:
+  name: exportar-auditoria
+  type: http
+  seq: 6
+http:
+  method: POST
+  url: "{{URL}}/api/v1/auditoria/exportar"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: Accept
+      value: application/zip, application/json
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+  body:
+    type: json
+    data: |-
+      {
+        "filtros": {
+          "desde": "2026-11-01T00:00:00Z"
+        },
+        "motivo": "Revisión de la bitácora de acciones sensibles del mes"
+      }
+docs: |-
+  Requiere auditoria.ver y auditoria.exportar, además del alcance que limita las filas.
+  Ajustar desde al intervalo deseado. Hasta opcional (ahora); extremos inclusivos,
+  intervalo máximo 366 días. motivo se recorta y debe tener de 10 a 500 caracteres.
+  filtros acepta los mismos campos del listado salvo pagina y limite: desde, hasta,
+  idUsuario, accion (varios códigos separados por coma), grupo, recurso, idRecurso,
+  idCliente y resultado. Omitir filtros opcionales no utilizados.
+  200: respuesta BINARIA application/zip, adjunto auditoria.zip, sin data ni sobre JSON.
+  Guardar/descargar la respuesta como archivo y descomprimir; no interpretarla como JSON.
+  Contiene auditoria.csv, auditoria.csv.sig (firma Ed25519 en base64) y LEEME.txt.
+  CSV UTF-8, coma, CRLF y comillas escapadas; columnas del listado más huella y huellaAnterior.
+  Las celdas de texto que podrían ser fórmulas llevan un apóstrofo inicial.
+  Obtener clave-publica-auditoria y seguir LEEME.txt para verificar los bytes exactos del CSV.
+  No abrir y volver a guardar el CSV antes de verificar su firma.
+  Registra AUDITORIA_EXPORTADA con motivo, filtros y número de filas antes de entregar
+  el archivo. Si falla la auditoría no se entrega. El evento no aparece en su propio ZIP.
+  Sin permiso de alcance se puede exportar un CSV vacío si se tienen ambos permisos.
+  Los errores conservan el sobre JSON habitual, aunque el éxito sea binario:
+  400 VALIDATION_ERROR, AUDIT_INVALID_RANGE o AUDIT_INVALID_ACTION;
+  403 FORBIDDEN si falta auditoria.ver o auditoria.exportar, con PERMISO_DENEGADO;
+  422 AUDIT_EXPORT_TOO_LARGE: details {total, limite: 10000}; acotar filtros y repetir;
+  503 AUDIT_SIGNING_UNAVAILABLE si falta la clave de firma del backend.
+  V1 no devuelve 202 ni envía enlaces por correo. La firma del CSV no sustituye la
+  verificación de integridad de la cadena mediante resumen-auditoria.

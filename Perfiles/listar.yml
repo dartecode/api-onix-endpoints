@@ -11,3 +11,7 @@ http:
 docs: |-
   Requiere perfil.ver. 200: data es una lista sin paginación con codigo,
   nombre, tipo, mfaRequerido y permisos.
+  Para auditoría comprobar auditoria.ver, auditoria.exportar y los permisos de alcance:
+  verTodo en Auditor/Gerencia, verConfiguracion en Administrador y verDatosPersonales
+  en DPD; Superadministrador recibe todo el catálogo. Los alcances se suman.
+  Operador, Técnico, Supervisor y clientes no reciben permisos de auditoría inicialmente.

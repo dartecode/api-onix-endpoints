@@ -9,7 +9,8 @@ extensions:
       - .git
 docs: |-
   Colección de Onix. Abrir README.md para variables, permisos y flujos manuales.
-  URL es el origen sin /api/v1; respuestas de negocio dentro de data.
+  URL es el origen sin /api/v1; respuestas JSON de negocio dentro de data.
+  Excepción: exportar auditoría devuelve un ZIP binario; sus errores conservan el sobre JSON.
   Login devuelve data.paso: sesion, cambio_contrasena, configurar_mfa o mfa.
   El primer acceso encadena sus pasos y actualiza TOKEN sin repetir credenciales.
   TOKEN es el Bearer; la renovación web usa el cookie jar de Bruno.
@@ -23,3 +24,6 @@ docs: |-
   inicialmente solo del Superadministrador. La semilla retira ese permiso del Administrador.
   Instalaciones usan idCanton/idParroquia del catálogo; provincia derivada del cantón.
   Instalaciones y puestos: 11 rutas, horarios nocturnos/24 horas y auditoría con motivo null en PUESTO_*.
+  Auditoría: seis rutas, permisos de alcance acumulables y exportación con auditoria.exportar.
+  Consultas por fechas (desde obligatorio, máximo 366 días), catálogo con grupos múltiples.
+  Exportación V1 hasta 10000 filas: ZIP firmado Ed25519; exceso: 422 AUDIT_EXPORT_TOO_LARGE.

@@ -1,0 +1,73 @@
+info:
+  name: listar-auditoria
+  type: http
+  seq: 1
+http:
+  method: GET
+  url: "{{URL}}/api/v1/auditoria?desde=2026-11-01T00:00:00Z&pagina=1&limite=20"
+  params:
+    - name: desde
+      value: "2026-11-01T00:00:00Z"
+      type: query
+    - name: pagina
+      value: "1"
+      type: query
+    - name: limite
+      value: "20"
+      type: query
+    - name: hasta
+      value: "2026-11-27T23:59:59Z"
+      type: query
+      disabled: true
+    - name: idUsuario
+      value: "00000000-0000-4000-8000-000000000001"
+      type: query
+      disabled: true
+    - name: accion
+      value: USUARIO_ACTUALIZADO,USUARIO_CREADO
+      type: query
+      disabled: true
+    - name: grupo
+      value: configuracion
+      type: query
+      disabled: true
+    - name: recurso
+      value: usuarios
+      type: query
+      disabled: true
+    - name: idRecurso
+      value: "00000000-0000-4000-8000-000000000001"
+      type: query
+      disabled: true
+    - name: idCliente
+      value: "1"
+      type: query
+      disabled: true
+    - name: resultado
+      value: exito
+      type: query
+      disabled: true
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere auditoria.ver. Los permisos de alcance se suman y se intersectan con los filtros.
+  Desde obligatorio; hasta opcional (ahora), ambos inclusivos y máximo 366 días.
+  Ajustar las fechas de ejemplo antes de ejecutar. Página desde 1; límite de 1 a 100.
+  Los filtros opcionales están desactivados en Params; habilitarlos individualmente.
+  idUsuario: UUID del actor. accion: uno o varios códigos del catálogo separados por coma.
+  grupo: configuracion, datos_personales, sesiones o seguridad.
+  recurso: auditoria_sensible, catalogos, usuarios, sesiones, mfa_desafios, clientes,
+  cliente_correos, roles, instalaciones o puestos. idRecurso: texto de hasta 100 caracteres.
+  Para toda la historia de una entidad habilitar recurso e idRecurso con sus valores reales;
+  no confundir idRecurso con el data.id de la entrada de auditoría.
+  idCliente: ID interno positivo del cliente, no idPerseo. resultado: exito, denegado o error.
+  200: data es una lista y meta contiene pagina, limite, total y totalPaginas.
+  Orden: fechaHora descendente y desempate por ID descendente.
+  Cada entrada: id, fechaHora, usuario {id, nombre, usuario} o null, perfil, accion,
+  recurso, idRecurso, cliente {id, razonSocial} o null, ip, aplicacion, dispositivo,
+  resultado y motivo. La lista no incluye valorAnterior ni valorNuevo.
+  Perfil e ID de recurso pueden ser null en históricos; aplicación ausente: desconocida.
+  Sin permisos de alcance: data vacía y total 0. Sin auditoria.ver: 403 FORBIDDEN auditado.
+  400 VALIDATION_ERROR por formato; AUDIT_INVALID_RANGE por intervalo inválido o excesivo;
+  AUDIT_INVALID_ACTION por un código de acción ajeno al catálogo.

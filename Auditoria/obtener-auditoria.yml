@@ -1,0 +1,21 @@
+info:
+  name: obtener-auditoria
+  type: http
+  seq: 2
+http:
+  method: GET
+  url: "{{URL}}/api/v1/auditoria/1"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere auditoria.ver y alcance sobre la entrada. Reemplazar 1 por un data.id real
+  de listar-auditoria; no usar el idRecurso de la entidad afectada.
+  200: data tiene los campos del listado y añade valorAnterior y valorNuevo.
+  Las fotos conservan claves en snake_case y no deben exponer hashes de contraseña,
+  secretos MFA ni tokens. aplicacion procede de valorNuevo.aplicacion.
+  perfil representa el código en el momento del registro; el nombre del actor y la razón
+  social del cliente se consultan de los datos actuales.
+  404 AUDIT_NOT_FOUND: ID inexistente, inválido o fuera de alcance. Si la entrada existe
+  fuera del alcance, se registra ACCESO_FUERA_DE_ALCANCE sin revelar el contenido.
+  Sin auditoria.ver: 403 FORBIDDEN auditado. Sesión no vigente: 401.

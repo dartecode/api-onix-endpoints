@@ -1,0 +1,21 @@
+info:
+  name: clave-publica-auditoria
+  type: http
+  seq: 5
+http:
+  method: GET
+  url: "{{URL}}/api/v1/auditoria/clave-publica"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+docs: |-
+  Requiere auditoria.ver; no exige auditoria.exportar. Sin filtros ni cuerpo.
+  200: data {algoritmo: "Ed25519", clavePublica: "-----BEGIN PUBLIC KEY-----..."}.
+  Guardar el valor de data.clavePublica como auditoria-publica.pem, respetando los saltos
+  de línea reales del PEM. No guardar el sobre JSON ni los caracteres literales barra-n.
+  La clave es pública y propia del entorno; obtenerla por un canal confiable y conservar
+  las anteriores al rotar claves para verificar exportaciones antiguas.
+  Sirve para verificar auditoria.csv.sig siguiendo LEEME.txt del ZIP de exportar-auditoria.
+  503 AUDIT_SIGNING_UNAVAILABLE: falta AUDIT_SIGNING_PRIVATE_KEY_BASE64 en el backend.
+  La clave privada nunca se configura ni se envía desde Bruno.
+  Sin auditoria.ver: 403 FORBIDDEN auditado. Sesión no vigente: 401.

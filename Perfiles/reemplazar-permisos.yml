@@ -40,4 +40,8 @@ docs: |-
   400 VALIDATION_ERROR: formato/repetidos; PERMISO_INVALIDO: details con códigos desconocidos.
   403 FORBIDDEN: sin permiso o intento de quitar cualquier permiso del catálogo al superadmin.
   El administrador tiene una matriz editable; no tiene permisos protegidos.
+  Auditoría: auditoria.ver habilita la consulta; verTodo, verConfiguracion y
+  verDatosPersonales (con prefijo auditoria.) se suman para limitar las filas visibles.
+  Con auditoria.ver sin alcance la lista queda vacía. Exportar requiere además
+  auditoria.exportar. Conservar todos los permisos actuales al modificar esos alcances.
   404 PERFIL_INVALIDO: perfil inexistente.
