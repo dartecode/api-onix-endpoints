@@ -8,7 +8,15 @@ docs:
     Provincias, cantones y parroquias se sincronizan desde Perseo y se consultan al API local.
     Las cuatro rutas exigen sesión completa con TOKEN y perfil de tipo interno.
     Las consultas no requieren permiso propio; sincronizar exige catalogo.sincronizar.
-    data es una lista sin paginar de { id, nombre } ordenada por nombre.
+    Si no hay provincias al arrancar, el API intenta cargar los tres niveles en segundo plano.
+    Un intento por arranque; si falla Perseo, registra el código del error y sigue disponible.
+    Con provincias existentes no actualiza al reiniciar. No hay programación mensual.
+    Las lecturas pueden estar vacías hasta completar la carga o si falla el proveedor.
+    La ruta manual queda para soporte: permiso inicialmente solo del Superadministrador.
+    La semilla lo retira del Administrador y revoca sus sesiones si cambia la matriz.
+    La autorización sigue la matriz editable; no hay exclusividad por código de perfil.
+    Las lecturas devuelven data como lista sin paginar de { id, nombre } ordenada por nombre.
+    La sincronización devuelve un resumen por nivel y comparte el bloqueo con la carga automática.
     Los cantones de Perseo (ciudadesid/ciudad) se publican como cantones.
     Incluir zonas no delimitadas si Perseo las entrega; no usar listas fijas de 24/221.
     En instalaciones se envían idCanton e idParroquia; la provincia se deriva del cantón.

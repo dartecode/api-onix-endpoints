@@ -14,4 +14,8 @@ docs: |-
   zonas no delimitadas si Perseo las entrega. El ambiente local verificado tiene 25 provincias;
   no usar esa cifra como lista fija.
   401: token ausente, expirado o sesión no vigente/completa. 403 FORBIDDEN: perfil no interno.
-  Antes de las consultas de hijos, ejecutar sincronizar-catalogos con un actor autorizado.
+  Si no hay provincias al arrancar, el API intenta cargar el catálogo en segundo plano.
+  Puede devolver data: [] mientras carga o si falla Perseo; revisar el log del backend.
+  Un intento por arranque, sin bloquear peticiones. Con catálogo cargado no vuelve a sincronizar.
+  No es necesario ejecutar sincronizar-catalogos antes de consultar; esa ruta queda para soporte.
+  Tras obtener provincias, copiar el id real a listar-cantones y luego consultar listar-parroquias.

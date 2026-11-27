@@ -10,5 +10,8 @@ http:
     token: "{{TOKEN}}"
 docs: |-
   Requiere perfil.ver. 200: data es una lista sin paginación con codigo, nombre y modulo.
-  Incluye catalogo.sincronizar, asignado al superadministrador y a la matriz inicial de
-  administradores. La sincronización de clientes usa cliente.sincronizar.
+  Incluye catalogo.sincronizar, asignado inicialmente solo al Superadministrador.
+  La semilla lo retira del Administrador existente y revoca sus sesiones si cambia la matriz.
+  La autorización depende de la matriz editable; el catálogo de permisos no representa la
+  asignación de cada perfil. Consultar listar-perfiles para comprobar las matrices.
+  La sincronización de clientes usa cliente.sincronizar.

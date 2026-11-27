@@ -95,7 +95,8 @@ Una sola sesión activa por cuenta: un login que emite sesión sustituye la ante
   estado, desbloqueo, restablecimiento y consulta/reinicio MFA.
 - Clientes: listado y filtros, ficha, resumen, historial, sincronización manual desde Perseo,
   comprobación de codificación de MAURER y gestión de correos locales.
-- Catálogos: provincias, cantones y parroquias sincronizados desde Perseo y sincronización manual.
+- Catálogos: provincias, cantones y parroquias de Perseo; carga inicial automática y actualización
+  manual de soporte.
 - Perfiles: catálogo, permisos y reemplazo de matriz.
 - Instalaciones: las 11 rutas de instalaciones y puestos, con selección geográfica por IDs,
   horario, estado, ubicación desde mapa/GPS, verificación e historial.
@@ -140,20 +141,32 @@ No hay clientes de prueba en la semilla; para crear una instalación se necesita
 ## Catálogo geográfico
 
 Perseo también es la fuente de provincias, cantones y parroquias. La semilla no crea una geografía
-fija: ejecutar la sincronización manual antes de usar los selectores.
+fija ni llama al proveedor. Si no hay provincias al arrancar, el API intenta cargar los tres
+niveles en segundo plano, sin bloquear el arranque ni las peticiones. Con provincias ya cargadas,
+reiniciar no actualiza el catálogo. Hay un intento por proceso y arranque, sin programación mensual.
 
 1. Configurar los mismos `PERSEO_SERVER`, `PERSEO_API_KEY` y `PERSEO_TIMEOUT_MS` del backend
    descritos para clientes. La clave no se envía desde Bruno.
-2. Con una sesión interna que tenga `catalogo.sincronizar`, ejecutar
-   `Catálogos/sincronizar-catalogos` sin cuerpo. Revisar los contadores por nivel en `data`:
-   `recibidos`, `creados`, `actualizados`, `sinCambios` y `ausentesEnPerseo`. Los registros
-   ausentes se conservan. Si otra sincronización está en curso, responderá `409`.
+2. Aplicar migraciones y semilla, arrancar el API y revisar el log de carga automática si no hay
+   provincias. Consultar `listar-provincias`: puede devolver `data: []` mientras termina la carga
+   o si falla Perseo. Ante un fallo, el log incluye el código y el API sigue disponible; no vuelve
+   a intentarlo durante ese arranque. La ejecución automática se audita con usuario `null` y
+   `aplicacion: "sistema"`.
 3. Recorrer `listar-provincias` → `listar-cantones` → `listar-parroquias`, copiando el `id` de
    cada respuesta a la URL siguiente. Las tres devuelven `{ id, nombre }` sin paginar, ordenadas
    por nombre; no requieren permiso propio, pero sí sesión completa y perfil interno.
 4. Usar esos IDs en instalaciones como `idCanton` e `idParroquia`. La provincia se deriva del
    cantón; no se envía como texto. Al cambiar de cantón, enviar una parroquia compatible o
-   `idParroquia: null`.
+    `idParroquia: null`.
+
+Para actualizar el catálogo o recuperar una carga fallida, soporte puede ejecutar
+`Catálogos/sincronizar-catalogos` sin cuerpo, con sesión interna y `catalogo.sincronizar`.
+Inicialmente solo lo recibe el Superadministrador. La semilla lo retira del Administrador
+existente y revoca sus sesiones si cambió la matriz; iniciar sesión nuevamente después.
+Las matrices siguen siendo editables: la autorización no impone exclusividad por código de perfil.
+Revisar en `data` los contadores por nivel: `recibidos`, `creados`, `actualizados`, `sinCambios`
+y `ausentesEnPerseo`. Los ausentes se conservan. La ruta comparte el bloqueo con la carga
+automática; si hay otra sincronización activa, devuelve `409 CATALOG_SYNC_IN_PROGRESS`.
 
 No asumir las cifras clásicas de 24 provincias y 221 cantones. En la verificación local de
 Perseo llegaron 25 provincias, 228 cantones y 1.436 parroquias; Quito (`1701`) tuvo 70
@@ -164,6 +177,24 @@ validación de jerarquía. Un perfil de cliente recibe `403 FORBIDDEN`.
 
 Contrato y casos en [CATALOGO-GEOGRAFICO.md](../APIOnix/docs/funcionalidad/CATALOGO-GEOGRAFICO.md)
 y [INSTALACIONES.md](../APIOnix/docs/funcionalidad/INSTALACIONES.md).
+
+### Comprobación manual de la carga y los permisos
+
+1. En una base aislada con geografía vacía, arrancar sin invocar `sincronizar-catalogos`.
+   Comprobar salud 200 y consultar los tres niveles después de que termine la carga. No exigir
+   un número fijo de provincias. Reiniciar con catálogo cargado no debe generar otra ejecución.
+2. Con catálogo vacío y Perseo inaccesible, comprobar que el API responde, registra el fallo y
+   conserva las tablas vacías. Restaurar la configuración para otro arranque o una carga manual.
+3. Después de la semilla, iniciar sesiones nuevas y ejecutar la misma petición
+   `sincronizar-catalogos`: Administrador → `403 FORBIDDEN`; Superadministrador → 200 si Perseo
+   está disponible. Si la semilla cambió la matriz, el token anterior queda revocado.
+4. Mientras la carga automática está activa, ejecutar la sincronización manual con Superadmin:
+   `409 CATALOG_SYNC_IN_PROGRESS`. La carga automática debe finalizar sin datos parciales y
+   liberar su bloqueo. Repetir manualmente después debe devolver 200, sin duplicados.
+
+Evidencia del backend, con Perseo real y base local aislada:
+[verificación del 27/11/2026](../APIOnix/docs/integracion/VERIFICACION-LOCAL-20261127.md).
+Estos pasos describen la aceptación desde Bruno; el enlace no acredita su ejecución en cada ambiente.
 
 ## Instalaciones y puestos
 
@@ -206,13 +237,15 @@ Un formato como `25:00` responde `400 VALIDATION_ERROR`, no `INVALID_SCHEDULE`.
 y `auditorInterno`. No se asigna a `operador`, `gerencia`, `dpd`, `clienteAdministrador`,
 `clienteResponsableInstalacion` ni `clienteConsulta`. La autorización depende de la matriz vigente.
 
-Para una base ya creada, la semilla no retira `instalacion.ver` concedido anteriormente:
+Para una base ya creada, `pnpm db:seed` retira `instalacion.ver` de los seis perfiles anteriores
+y revoca sus sesiones si cambió la matriz. No hace falta editar las matrices a mano:
 
 1. Ejecutar `Perfiles/listar` con un actor con `perfil.ver` y `perfil.editar`.
-2. En cada uno de los seis perfiles afectados, copiar la lista actual, retirar solo
-   `instalacion.ver` y enviarla en `Perfiles/reemplazar-permisos`, cambiando el código en la URL.
-   El PUT reemplaza **toda** la matriz: conservar los demás permisos.
-3. Los cambios reales se auditan y revocan las sesiones del perfil. Volver a iniciar sesión.
+2. Comprobar que los seis perfiles ya no incluyen `instalacion.ver` después de ejecutar la semilla.
+   Si se vuelve a conceder con `Perfiles/reemplazar-permisos`, la siguiente semilla lo retirará.
+   El PUT reemplaza **toda** la matriz; para otros ajustes conservar los demás permisos.
+3. Volver a iniciar sesión con los perfiles afectados. La semilla no registra auditoría de estos
+   retiros; los cambios de matriz hechos por el API sí se auditan y revocan sesiones.
 4. Con Operador: listado, ficha e historial → `403 FORBIDDEN`. Con Auditor interno con permiso:
    listado → `200`. Volver a la cuenta autorizada para continuar los cambios.
 
@@ -223,7 +256,7 @@ Para una base ya creada, la semilla no retira `instalacion.ver` concedido anteri
 cliente. No se asigna a `gerencia` ni a `dpd`: la matriz sigue la fila "Administrar usuarios
 internos".
 
-A diferencia de `instalacion.ver`, en bases ya creadas `pnpm db:seed` elimina `usuario.ver` de
+Al igual que con `instalacion.ver`, en bases ya creadas `pnpm db:seed` elimina `usuario.ver` de
 `seguridad.roles_permisos` para gerencia y DPD y revoca sus sesiones vigentes en la misma
 transacción. No hace falta enviar el PUT para retirarlo; si se vuelve a conceder con
 `Perfiles/reemplazar-permisos`, la siguiente semilla lo quitará otra vez.

@@ -12,6 +12,10 @@ settings:
   timeout: 0
 docs: |-
   Sin cuerpo. Requiere perfil de tipo interno y catalogo.sincronizar.
+  Actualización manual de soporte; el catálogo vacío se intenta cargar automáticamente al arrancar.
+  El permiso se asigna inicialmente solo al Superadministrador. La semilla lo retira del
+  Administrador existente y revoca sus sesiones si cambia la matriz; volver a iniciar sesión.
+  Las matrices siguen siendo editables: no hay una prohibición por código de perfil.
   Configurar PERSEO_SERVER, PERSEO_API_KEY y PERSEO_TIMEOUT_MS solo en el backend
   (.env.docker en desarrollo); no poner la clave en Bruno.
   Consulta provincias, cantones y parroquias en Perseo, valida códigos y jerarquía, y aplica
@@ -21,7 +25,10 @@ docs: |-
   Repetir sin cambios no duplica registros; en la verificación local quedaron 25/228/1436 sin cambios.
   401: token ausente, expirado o sesión no vigente/completa.
   403 FORBIDDEN: sin permiso o perfil no interno.
+  Con la matriz reconciliada por la semilla: Administrador con sesión nueva recibe 403;
+  Superadministrador recibe 200 si Perseo está disponible y no hay otra sincronización activa.
   409 CATALOG_SYNC_IN_PROGRESS/CATALOG_SYNC_LOCK_LOST: bloqueo de sincronización.
+  El bloqueo se comparte con la carga automática: una petición durante esa carga puede recibir 409.
   503 PERSEO_NOT_CONFIGURED/PERSEO_UNAVAILABLE/PERSEO_INVALID_RESPONSE/
   PERSEO_INVALID_GEOGRAPHY/CATALOG_SYNC_FAILED: configuración, proveedor o transacción;
   el catálogo anterior se conserva.

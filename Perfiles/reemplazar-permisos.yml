@@ -28,11 +28,14 @@ docs: |-
   Modificar el ejemplo según la matriz deseada antes de enviarlo.
   El ejemplo muestra la matriz inicial del Operador sin instalacion.ver; consultar listar-perfiles
   y conservar sus demás permisos actuales si solo se quiere retirar ese permiso.
-  Para bases existentes retirar instalacion.ver de operador, gerencia, dpd, clienteAdministrador,
-  clienteResponsableInstalacion y clienteConsulta, enviando para cada perfil su lista completa.
-  Cambiar el catálogo o repetir la semilla no elimina permisos ya concedidos, salvo usuario.ver
-  en gerencia y dpd: la semilla lo retira y revoca sus sesiones, así que concederlo aquí no es
-  persistente. Ver Usuarios y permisos de consulta en README.md.
+  En bases existentes la semilla retira instalacion.ver de operador, gerencia, dpd,
+  clienteAdministrador, clienteResponsableInstalacion y clienteConsulta; también usuario.ver
+  de gerencia y dpd y catalogo.sincronizar del Administrador. Revoca sesiones si cambia la matriz.
+  No hace falta enviar este PUT para esos retiros. Si se vuelven a conceder aquí, la siguiente
+  semilla los quitará otra vez. Los permisos adicionales no incluidos en los retiros se conservan.
+  La semilla rellena permisos iniciales ausentes salvo retiro manual registrado en auditoría.
+  Ver Catálogo geográfico, Permisos y matrices existentes y Usuarios y permisos de consulta
+  en README.md.
   200: data es el perfil actualizado. Si hay cambios cierra sus sesiones.
   400 VALIDATION_ERROR: formato/repetidos; PERMISO_INVALIDO: details con códigos desconocidos.
   403 FORBIDDEN: sin permiso o intento de quitar cualquier permiso del catálogo al superadmin.

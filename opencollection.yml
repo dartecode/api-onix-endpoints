@@ -17,7 +17,9 @@ docs: |-
   Swagger: http://localhost:3000/api/v1/docs.
   Contrato HTTP vigente: /api/v1/openapi.json; reglas en APIOnix/docs/funcionalidad/.
   Desarrollo local: API y PostgreSQL en Docker con .env.docker; .env del backend conserva QA.
-  Clientes y catálogo geográfico desde Perseo mediante sincronización manual.
-  Catálogos: provincias, cantones y parroquias; lectura con perfil interno y sincronización con permiso.
+  Clientes desde Perseo mediante sincronización manual.
+  Catálogo geográfico vacío: un intento de carga en segundo plano al arrancar, sin bloquear el API.
+  Catálogos: lectura con perfil interno; actualización manual de soporte con catalogo.sincronizar,
+  inicialmente solo del Superadministrador. La semilla retira ese permiso del Administrador.
   Instalaciones usan idCanton/idParroquia del catálogo; provincia derivada del cantón.
   Instalaciones y puestos: 11 rutas, horarios nocturnos/24 horas y auditoría con motivo null en PUESTO_*.
